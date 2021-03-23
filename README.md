@@ -1,5 +1,3 @@
-# ERC EXPO 
-
 # null-effects-happiness
 
 Contains the replication code and data for the study 
