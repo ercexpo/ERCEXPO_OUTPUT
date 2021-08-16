@@ -101,7 +101,7 @@ translate_label = function(x){
   if (!is.null(lab) & length(lab) == 1){lang = textcat::textcat(lab)} 
   if (lang == "polish"){
     
-    apikey = "AIzaSyAzCGqsbh9LQN8AMCxePQcsMFlNWBZGqco"
+    apikey = "INSERTKEY"
     newlab = translateR::translate(content.vec = lab,
                                    google.api.key = apikey,
                                    source.lang = 'pl',
