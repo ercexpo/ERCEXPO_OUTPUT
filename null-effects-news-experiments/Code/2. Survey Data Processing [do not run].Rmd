@@ -1,0 +1,1010 @@
+---
+title: "2. Survey Data Processing [do not run]"
+---
+
+## Data imports
+
+```{r}
+knitr::opts_chunk$set(message = FALSE, warning = FALSE)
+
+source('helpers.R')
+
+pl = read_rename_csv(paste0("pl_survey_post.csv"), "_post") %>%
+  left_join(., read_rename_sav("pl_survey_w1.sav", "_w1"), 
+            by = c("respondent_id_post" = "respondent_id_w1")) %>%
+  left_join(., read_rename_sav("pl_survey_pre.sav", "_pre"), 
+            by = c("respondent_id_post" = "respondent_id_pre")) %>%
+  setNames(., tolower(names(.))) %>% 
+  mutate(news_self = rowMeans(
+    select(., paste0("q8_h2_r", 1:9, "_w1")), na.rm = T))
+
+us = read_rename_csv(paste0("us_survey_post.csv"), "_post") %>%
+  left_join(., read_rename_csv("us_survey_all.csv", ""), 
+            by = c("person_id_post" = "person_id")) %>%
+  setNames(., tolower(names(.))) %>% 
+  mutate(news_self = rowMeans(
+    select(., 
+           paste0("days_week_", c("tv", "print", "radio", 
+           "web", "sm", "msg", "f2f", "app", "search"), "_w1")), 
+    na.rm = T))
+```
+
+Select relevant variables for the American dataset
+```{r}
+us = select(us, c(
+  # respondent information
+  "person_id_post", "gender_w0_fac", "age_w0", "edu_w0_fac",
+  "party_w3", "ideo_w3", "approve_trump_w1",
+  
+  # political knowledge
+  paste0("know_", 1:5, "_post"),
+  paste0("cur_event_0", 1:4, "_post"),
+  
+  # participation 
+  "par_2020_post",
+  
+  # attitude importance
+  paste0("important_", c("gun", "immigrant", "climate", "trump", "econ"), "_w3"),
+  paste0("isperso_", 1:5, "_post"),
+  
+  # attitude strength 
+  paste0("strong_", c("gun", "immigrant", "climate", "trump", "econ"), "_w3"),
+  paste0("isstrong_", 1:5, "_post"),
+  
+  # affective polarization: feeling thermometer 
+  # democrats, republicans, liberals, conservatives, 
+  # gun control, immigration, climate change, economy
+  paste0("ft_", c("dem_supporters", "rep_supporters", "liberals", 
+                  "conservatives", "gun", "immigrant", 
+                  "climate", "econ"), "_w3"),
+  paste0("thermom_", c(4:7, 9:12), "_post"),
+  
+  # affective polarization: negative traits
+  # out-partisans, (democrats), out-ideologues, (liberals)
+  # gun control, immigration, climate change, economy
+  paste0("stupid_", c("party_opp", "ind_dem", "ideo_opp", "ind_cons", 
+                      "gun", "immigrant", "climate", "econ"), "_w3"),
+  paste0("stupid_", c(7, 9, 1, 2, 3, 5), "_post"),
+  
+  # affective polarization: understanding
+  # out-partisans, out-ideologues
+  # gun control, immigration, climate change, economy
+  paste0("understand_", c("party_opp", "ideo_opp", 
+                          "gun", "immigrant", "climate", "econ"), "_w3"),
+  paste0("understand_", c(7, 9, 1, 2, 3, 5), "_post"),
+  
+  # attribution of malevolence 
+  paste0("malvol_", 1:5, "_w3"),
+  paste0("malvol_", 1:5, "_post"),
+  
+  # support for compromise
+  paste0("supp_compr_", 1:4, "_w3"), 
+  paste0("compromise_", 1:4, "_post"),
+  
+  # perceived polarization
+  paste0("perpol_", 1:4, "_w3"),
+  paste0("perpol_", 1:4, "_post"),
+  
+  # physical well-being
+  paste0("well_act_", 1:5, "_post"),
+  
+  # mental well-being 
+  paste0("well_feelings_", 1:6, "_post"),
+  
+  # exposure variables
+  "visits_raw_w3_post", "visits_u_w3_post", "day_range_w3_post", 
+  "active_days_w3_post", "count_domains_w3_post", 
+  "domain_center_w3_post", "domain_left_w3_post", "domain_right_w3_post", 
+  "domain_center_mean_w3_post", "domain_left_mean_w3_post",
+  "domain_right_mean_w3_post", "news_self", "diet_lean_w2",
+  
+  # condition
+  "nonews_condition_post"
+))
+```
+
+Rename columns for the American dataset
+```{r}
+colnames(us) = c(
+  # respondent information
+  "person_id", "sex", "age", "edu",
+  "party", "ideo", "approve_trump",
+  
+  # political knowledge
+  paste0("know_", 1:5, "_post"),
+  paste0("know_fac_", 1:4, "_post"),
+  
+  # participation 
+  "ptc_post",
+  
+  # attitude importance
+  paste0("att_imp_", c("gun", "immigrant", "climate", "trump", "econ"), "_pre"),
+  paste0("att_imp_", c("gun", "immigrant", "climate", "trump", "econ"), 
+         "_post"),
+  
+  # attitude strength 
+  paste0("att_str_", c("gun", "immigrant", "climate", "trump", "econ"), "_pre"),
+  paste0("att_str_", c("gun", "immigrant", "climate", "trump", "econ"), 
+         "_post"),
+  
+  # affective polarization: feeling thermometer 
+  # democrats, republicans, liberals, conservatives, 
+  # gun control, immigration, climate change, economy
+  paste0("ft_", c("dem", "rep", "lib", "cons", "gun", "immigrant", 
+                  "climate", "econ"), "_pre"),
+  paste0("ft_", c("dem", "rep", "lib", "cons", "gun", "immigrant", 
+                  "climate", "econ"), "_post"),
+  
+  # affective polarization: negative traits
+  # out-partisans, (democrats), out-ideologues, (liberals)
+  # gun control, immigration, climate change, economy
+  paste0("stupid_", c("party_opp", "ind_dem", "ideo_opp", "ind_cons", 
+                      "gun", "immigrant", "climate", "econ"), "_pre"),
+  paste0("stupid_", c("party_opp", "ideo_opp", 
+                      "gun", "immigrant", "climate", "econ"), "_post"),
+  
+  # affective polarization: understanding
+  # out-partisans, out-ideologues
+  # gun control, immigration, climate change, economy
+  paste0(c("under_party_opp", "under_ideo_opp", "under_gun", 
+           "under_immigrant", "under_climate", "under_econ"), "_pre"),
+  paste0(c("under_party_opp", "under_ideo_opp", "under_gun", 
+           "under_immigrant", "under_climate", "under_econ"), "_post"),
+  
+  # attribution of malevolence 
+  paste0("malvol_", 1:5, "_pre"),
+  paste0("malvol_", 1:5, "_post"),
+  
+  # support for compromise
+  paste0("comp_", 1:4, "_pre"), 
+  paste0("comp_", 1:4, "_post"),
+  
+  # perceived polarization
+  paste0("perpol_", 1:4, "_pre"),
+  paste0("perpol_", 1:4, "_post"),
+  
+  # physical well-being
+  paste0("well_act_", 1:5, "_post"),
+  
+  # mental well-being 
+  paste0("well_feel_", 1:6, "_post"),
+  
+  # exposure variables
+  "visits_raw", "visits_u", "day_range", "active_days", "count_domains", 
+  "domain_center", "domain_left", "domain_right", 
+  "domain_center_mean", "domain_left_mean", "domain_right_mean",  
+  "news_self", "news_like_self",
+  
+  # condition
+  "condition"
+)
+```
+
+Select relevant columns for the Polish dataset
+```{r}
+pl = select(pl, c(
+  # respondent information
+  "person_id_post", "sex_w1", "age_w1", "edu_w1",
+  "q2dwa_r1_w1", "qq2dwa_r1_pre", "q2_r1_w1",
+  "qq2_r1_pre", "q4pref_w1", "q4niepref_w1", 
+  "qq4pref_pre", "qq4niepref_pre",
+  
+  # political knowledge
+  paste0("exp6know_r", 1:5, "_post"),
+  paste0("exp9wiedza", 1:4, "_post"),
+  
+  # participation 
+  paste0("exp24particip_r", 1:8, "_post"),
+  
+  # attitude importance
+  paste0("qq40_r", c(1:3, 5:6), "_pre"),
+  paste0("exp11qq40_r", c(1:3, 5:6), "_post"),
+  
+  # attitude strength 
+  paste0("qq39_r", c(1:3, 5:6), "_pre"),
+  paste0("exp10qq39_r", c(1:3, 5:6), "_post"),
+  
+  # affective polarization: feeling thermometer
+  # out-partisans (farthest from, PIS, SLD)
+  # people with leftist views, people with rightist views, 
+  # women's rights, religion, EU, economy
+  paste0("qq50r", c(1,4:11) ,"_pre"),
+  paste0("exp16qq50r", c(1,4:11) ,"_post"),
+  
+  # affective polarization: negative traits
+  # out-partisans farthest from
+  # women's rights, religion, EU, economy
+  # PROBLEM: OUT-IDEOLOGUES PIS & SLD ARE MISSING
+  "qq55c_h1_r1_pre", "qq53_1_h1_r1_pre", "qq52_2_h1_r1_pre", 
+  "qq53_2_h1_r1_pre", "qq52_1_h1_r1_pre",
+  
+  # out-partisans (farthest from, PIS, SLD)
+  # people with leftist views, people with rightist views, 
+  # women's rights, religion, EU, economy
+  paste0("exp15p08_h1_r", c(1,5:12), "_post"),
+  
+  # affective polarization: understanding
+  # out-partisans (farthest from, PIS, SLD)
+  # people with leftist views, people with rightist views, 
+  # women's rights, religion, EU, economy
+  paste0("qq47_h1_r", c(2,5:12), "_pre"),
+  paste0("exp14qq47_h1_r", c(2,5:12), "_post"),
+  
+  # attribution of malevolence 
+  paste0("qq58zw_1_r", 2:6, "_pre"),
+  paste0("qq58op_1_r", 2:6, "_pre"),
+  paste0("exp21qq58zw_1_r", 2:6, "_post"),
+  paste0("exp22qq58op_1_r", 2:6, "_post"),
+  
+  # support for compromise
+  paste0("compromise", 1:4, "_r1_pre"),
+  paste0("exp", 17:20, "compromise", 1:4, "_r1_post"),
+  
+  # perceived polarization
+  paste0("qq58_2_r", 2:5, "_pre"),
+  paste0("exp23qq58_2_r", 2:5, "_post"),
+  
+  # physical well-being
+  paste0("exp5_r", 1:5, "_post"),
+
+  # mental well-being 
+  paste0("exp4_r", 1:6, "_post"),
+  
+  # exposure variables
+  "visits_raw_w2_post", "visits_u_w2_post", "day_range_w2_post", 
+  "active_days_w2_post", "count_domains_w2_post", 
+  "domain_center_w2_post", "domain_left_w2_post", "domain_right_w2_post", 
+  "domain_center_mean_w2_post", "domain_left_mean_w2_post",
+  "domain_right_mean_w2_post", "news_self", "f1_pre", 
+  
+  # condition
+  "wave2kontrolna_pre", "wave2eksperymentalna_pre"
+))
+```
+
+Rename columns for the Polish dataset
+```{r}
+colnames(pl) = c(
+  # respondent information
+  "person_id", "sex", "age", "edu",
+  "suppgov1", "suppgov2", "ideo1",
+  "ideo2", "party1", "opp_party1", 
+  "party2", "opp_party2",
+  
+  # political knowledge
+  paste0("know_", 1:5, "_post"),
+  paste0("know_fac_", 1:4, "_post"),
+  
+  # participation 
+  paste0("ptc_", 1:8, "_post"),
+  
+  
+  # attitude importance
+  paste0("att_imp_", 1:5, "_pre"),
+  paste0("att_imp_", 1:5, "_post"),
+  
+  # attitude strength 
+  paste0("att_str_", 1:5, "_pre"),
+  paste0("att_str_", 1:5, "_post"),
+  
+  # affective polarization: feeling thermometer
+  # out-partisans (farthest from, PIS, SLD)
+  # people with leftist views, people with rightist views, 
+  # women's rights, religion, EU, economy
+  paste0("ft_", c("far", "pis", "sld", "lw", "rw", 
+                  "women", "rel", "eu", "econ"),"_pre"),
+  paste0("ft_", c("far", "pis", "sld", "lw", "rw", 
+                  "women", "rel", "eu", "econ"),"_post"),
+  
+  # affective polarization: negative traits
+  # out-partisans farthest from
+  # women's rights, religion, EU, economy
+  # PROBLEM: OUT-IDEOLOGUES PIS & SLD ARE MISSING
+  "stupid_far_pre", "stupid_women_pre", "stupid_rel_pre", 
+  "stupid_eu_pre", "stupid_econ_pre",
+  
+  # out-partisans (farthest from, PIS, SLD)
+  # people with leftist views, people with rightist views, 
+  # women's rights, religion, EU, economy
+  paste0("stupid_", c("far", "pis", "sld", "lw", "rw", 
+                      "women", "rel", "eu", "econ"),"_post"),
+  
+  # affective polarization: understanding
+  # out-partisans (farthest from, PIS, SLD)
+  # people with leftist views, people with rightist views, 
+  # women's rights, religion, EU, economy
+  paste0("under_", c("far", "pis", "sld", "lw", "rw", 
+                     "women", "rel", "eu", "econ"), "_pre"),
+  paste0("under_", c("far", "pis", "sld", "lw", "rw", 
+                     "women", "rel", "eu", "econ"), "_post"),
+  
+  # attribution of malevolence 
+  paste0("malvol_gov_", 1:5, "_pre"),
+  paste0("malvol_op_", 1:5, "_pre"),
+  paste0("malvol_gov_", 1:5, "_post"),
+  paste0("malvol_op_", 1:5, "_post"),
+  
+  # support for compromise
+  paste0("comp_", 1:4, "_pre"),
+  paste0("comp_", 1:4, "_post"),
+  
+  # perceived polarization
+  paste0("perpol_", 1:4, "_pre"),
+  paste0("perpol_", 1:4, "_post"),
+  
+  # physical well-being
+  paste0("well_act_", 1:5, "_post"),
+
+  # mental well-being 
+  paste0("well_feel_", 1:6, "_post"),
+  
+  # exposure variables
+  "visits_raw", "visits_u", "day_range", "active_days", "count_domains", 
+  "domain_center", "domain_left", "domain_right", 
+  "domain_center_mean", "domain_left_mean", "domain_right_mean",  
+  "news_self", "news_like_self",
+  
+  # condition
+  "condition_control", "condition_experimental"
+)
+```
+
+## Demographic variables
+
+Sex
+```{r}
+# POLAND
+pl$sex = recode(pl$sex, `1` = "Male", `2` = "Female")
+```
+
+Age (categorical variable)
+```{r}
+# UNITED STATES
+us$age = case_when(
+  us$age %in% 0:17 ~ "Age: 0–17",
+  us$age %in% 18:24 ~ "Age: 18–24",
+  us$age %in% 25:34 ~ "Age: 25–34",
+  us$age %in% 35:44 ~ "Age: 35–44",
+  us$age %in% 45:54 ~ "Age: 45–54",
+  us$age %in% 55:200 ~ "Age: 55+")
+
+pl$age = case_when(
+  pl$age %in% 2 ~ "Age: 18–24",
+  pl$age %in% 3 ~  "Age: 25–34",
+  pl$age %in% 4 ~ "Age: 35–44",
+  pl$age %in% 5 ~  "Age: 45–54",
+  pl$age %in% 6 ~ "Age: 55+")
+```
+
+Educational attainment 
+```{r}
+# UNITED STATES
+us$edu = 
+  recode(us$edu,
+    `Associate Degree` = "Education: Junior college", 
+    `College Degree (such as B.A., B.S.)` = "Education: Bachelor", 
+    `High school graduate` = "Education: High school", 
+    `Master's degree` = "Education: Graduate school", 
+    `Completed some college, but no degree` = "Education: Junior college", 
+    `Completed some graduate, but no degree` = "Education: Bachelor", 
+    `Doctorate degree` = "Education: Graduate school", 
+    `Other post-high school vocational training` = "Education: High school", 
+    `Middle School - Grades 4-8` = "Education: Less than high school", 
+    `Completed some high school` = "Education: Less than high school"
+  )
+
+# POLAND
+pl$edu = case_when(
+  pl$edu %in% 1 ~ "Education: Less than high school",
+  pl$edu %in% 2 ~ "Education: Vocational degree",
+  pl$edu %in% 3 ~  "Education: High school",
+  pl$edu %in% 4 ~ "Education: Some college",
+  pl$edu %in% 5 ~  "Education: Bachelor degree",
+  pl$edu %in% 6 ~ "Education: Graduate school")
+```
+
+## Independent variables 
+
+Experimental condition
+```{r}
+# UNITED STATES
+us$condition = recode(us$condition, 
+                      `control` = "No News - Control",
+                      `experiment` = "No News - Experiment")
+
+# POLAND
+pl$condition = ""
+pl$condition[!is.na(pl$condition_control)] = "More News - Control"
+pl$condition[!is.na(pl$condition_experimental)] = "More News - Experiment"
+```
+
+Partisanship (used to identify political out-groups) 
+```{r}
+# UNITED STATES
+us$party_bin = case_when(
+  us$party %in% 1:3 ~ "Democrat", 
+  us$party %in% 4 ~ "Independent", 
+  us$party %in% 5:7 ~ "Republican")
+
+# Impute using ideology
+us$party_bin[us$party_bin == "Independent" & us$ideo < 5] = "Democrat" 
+us$party_bin[us$party_bin == "Independent" & us$ideo > 5] = "Republican" 
+
+# Impute using support for Trump
+us$party_bin[us$party_bin == "Independent" & us$approve_trump < 5] = "Democrat" 
+us$party_bin[us$party_bin == "Independent" & 
+             us$approve_trump > 5] = "Republican" 
+
+# Assign remaining randomly 
+us$party_bin[us$party_bin == "Independent"] = 
+  sample(c("Democrat", "Republican"), size = 1)
+
+# POLAND
+pl$party_bin = "missing"
+
+# Opponents vs. proponents government
+pl$party_bin[pl$suppgov1<5] = "Anti"
+pl$party_bin[pl$suppgov1>5] = "Pro"
+
+pl$party_bin[pl$party_bin == "missing" & pl$suppgov2<5] = "Anti"
+pl$party_bin[pl$party_bin == "missing" & pl$suppgov2>5] = "Pro"
+
+# Impute using ideology 
+pl$party_bin[pl$party_bin == "missing" & pl$ideo1<5] = "Anti"
+pl$party_bin[pl$party_bin == "missing" & pl$ideo1>5] = "Pro"
+
+pl$party_bin[pl$party_bin == "missing" & pl$ideo2<5] = "Anti"
+pl$party_bin[pl$party_bin == "missing" & pl$ideo2>5] = "Pro"
+
+# Impute using party  
+pl$party_bin[pl$party_bin == "missing" & pl$party1 == 1] = "Pro"
+pl$party_bin[pl$party_bin == "missing" & pl$opp_party1 == 1] = "Anti"
+
+pl$party_bin[pl$party_bin == "missing" & pl$party2 == 1] = "Pro"
+pl$party_bin[pl$party_bin == "missing" & pl$opp_party2 == 1] = "Anti"
+
+# Randomly impute remaining 17 independents
+pl$party_bin[pl$party_bin == "missing"] = 
+  sample(c("Pro", "Anti"), size = 1)
+```
+
+News exposure and congenial news exposure
+```{r}
+# UNITED STATES
+us$news = us$count_domains / us$active_days
+us$news_like = us$domain_left / us$active_days
+us$news_like[which(us$party_bin == "Democrat")] = 
+  us$domain_left[which(us$party_bin == "Democrat")] / 
+  us$active_days[which(us$party_bin == "Democrat")]
+
+# POLAND
+pl$news = pl$count_domains / pl$active_days
+pl$news_like = pl$domain_left / pl$active_days
+pl$news_like[which(pl$party_bin == "Pro")] = 
+  pl$domain_left[which(pl$party_bin == "Pro")] / 
+  pl$active_days[which(pl$party_bin == "Pro")]
+```
+
+
+## Dependent variables
+
+> Political knowledge
+
+**United States** and **Poland** [only in post-survey]
+
+  1. Self-perceived knowledge
+  
+    - I know pretty much about politics.
+    - I do not feel very knowledgeable about politics. (-)
+    - Among my circle of friends, I'm one of the “experts” on politics.
+    - Compared to most other people, I know less about politics. (-)
+    - When it comes to politics, I really don't know a lot (-)
+  
+  2. Factual knowledge (questions change every week)
+  
+```{r}
+# UNITED STATES 
+
+# invert negatively coded items
+for (i in c(2,4,5)){us[,paste0("know_", i, "_post")] = 
+  invert(us[,paste0("know_", i, "_post")])}
+
+# correct incorrect dummy for knowledge questions
+for (i in 1:4){
+  us[,paste0("know_fac_",i, "_post")] = 
+    recode(us[,paste0("know_fac_",i, "_post")], 
+           `1` = 1, `2` = 0, `3` = 0, `4` = 0, .default = 0)
+}
+
+# calculate row means and totals
+us$know_post = rowMeans(select(us,paste0("know_", c(1:5), "_post")), na.rm = T)
+us$know_fac_post = rowSums(select(us,paste0("know_fac_", c(1:4), "_post")), 
+                           na.rm = T)
+
+# POLAND 
+
+# invert negatively coded items
+for (i in c(2,4,5)){ pl[,paste0("know_", i, "_post")] = 
+  invert(pl[,paste0("know_", i, "_post")])}
+
+# correct incorrect dummy for knowledge questions
+for (i in 1:4){
+  correct = c(3, 1, 3, 1)[i]
+  incorrect = c(1:4)[1:4 %notin% correct]
+  
+  pl[,paste0("know_fac_",i, "_post")] = 
+    case_when(
+      pl[,paste0("know_fac_",i, "_post")] %in% correct ~ 1, 
+      pl[,paste0("know_fac_",i, "_post")] %in% incorrect ~ 0
+    )
+}
+
+# calculate row means and totals
+pl$know_post = rowMeans(select(pl,paste0("know_", c(1:5), "_post")), na.rm = T)
+pl$know_fac_post = rowSums(select(pl,paste0("know_fac_", c(1:4), "_post")), 
+                           na.rm = T)
+```
+
+> Political participation
+
+**United States** and **Poland** [only in post-survey]: In the list below, 
+select all political activities in which you were involved in the months:
+
+  - Signed a petition 
+  - Donated or collected money
+  - Shared my thoughts in social media  
+  - Attended a political meeting
+  - Participated in a protest
+  - Contacted the politician             
+  - Volunteered for a campaign             
+  - Wrote a letter to the media
+
+```{r}
+# UNITED STATES
+us$ptc_post = sapply(strsplit(us$ptc, ","), length)
+
+# POLAND
+pl$ptc_post = rowSums(select(pl, paste0("ptc_", 1:8, "_post")))
+```
+
+> Attitude strength
+
+How strong are your views on each of the following issues?	
+[1 'not strong at all', 7 'very strong']
+
+**United States**
+
+  - Gun control
+  - Immigration
+  - Climate
+  - Economy 
+  
+**Poland** 
+
+  - Women's rights
+  - Religion and the Church in public life
+  - Poland's relations with the EU
+  - Economy
+
+```{r}
+# UNITED STATES 
+us_issues = c("gun", "immigrant", "climate", "econ")
+
+us$att_str_pre = rowMeans(select(us, paste0("att_str_", us_issues, "_pre")))
+us$att_str_post = rowMeans(select(us, paste0("att_str_", us_issues, "_post")))
+
+# POLAND
+pl$att_str_pre = rowMeans(
+  select(pl, paste0("att_str_", 1:4, "_pre")), na.rm = T)
+pl$att_str_post = rowMeans(
+  select(pl, paste0("att_str_", 1:4, "_post")),  na.rm = T)
+```
+
+> Attitude importance 
+
+How important is each of the following issues to you personally?
+[1 'not at all important', 7 'very important']
+
+**United States**
+
+  - Gun control
+  - Immigration
+  - Climate
+  - Economy 
+  
+**Poland** 
+
+  - Women's rights
+  - Religion and the Church in public life
+  - Poland's relations with the EU
+  - Economy
+  
+```{r}
+# UNITED STATES 
+
+us$att_imp_pre = rowMeans(select(us, paste0("att_imp_", us_issues, "_pre")))
+us$att_imp_post = rowMeans(select(us, paste0("att_imp_", us_issues, "_post")))
+
+# POLAND 
+
+pl$att_imp_pre = rowMeans(
+  select(pl, paste0("att_imp_", 1:4, "_pre")), na.rm = T)
+pl$att_imp_post = rowMeans(
+  select(pl, paste0("att_imp_", 1:4, "_post")),  na.rm = T)
+```
+
+
+> Affective polarization 
+
+    1. *Feeling thermometer:* We'd like you to rate several different groups and 
+       individuals using something called a "feeling thermometer". The higher 
+       the number, the warmer or more favorable you feel toward the group; the 
+       lower the number, the colder or less favorable. Please rate how you feel 
+       about the following groups and individuals.	
+       [0 'Very cold', 100 'Very warm']
+    2. *Negative traits:* To what extent do you agree or disagree with the 
+       statement that supporters of ... are stupid.
+       [1 'strongly disagree' 2 'strongly agree']
+    3. *Understanding:* How much do you understand the perspectives and values 
+       of the following groups ("I understand" does not necessarily mean that 
+       you agree with them). [1 not at all - 7 very much]
+
+**United States**
+
+  - Supporters of the Democratic Party
+  - Supporters of the Republican Party
+  - Liberals
+  - Conservatives
+  - Those with opposite views on gun control
+  - Those with opposite views on immigration
+  - Those with opposite views on climate change
+  - Those with opposite views on the economy
+  
+**Poland**
+
+  - The party you feel farthest from
+  - Supporters of PiS
+  - Supporters of SLD
+  - Leftist citizens
+  - Rightist citizens 
+  - Those with opposite views on women's rights
+  - Those with opposite views on religion and the church in public life
+  - Those with opposite views on Poland's relations with the EU
+  - Those with opposite views on the economy
+  
+```{r}
+# UNITED STATES 
+
+# invert all feeling thermometer variables
+for(i in names(us)[grepl("ft_", names(us))]){us[,i] = invert(us[,i])}
+
+# identify affective polarization variable according to partisanship
+for (i in 1:3){
+  
+  var = c("ft", "under", "stupid")[i]
+  var_party = paste0(var, "_party_op")
+  var_ideo = paste0(var, "_ideo_op")
+  
+  for (w in c("_pre", "_post")){
+    
+    for (j in 1:2){
+     
+    newvar = list(var_party, var_ideo)[[j]]
+    
+    if (i == 1){
+    g1 = c(paste0(var, "_dem"), paste0(var, "_lib"))[j]
+    g2 = c(paste0(var, "_rep"), paste0(var,"_cons"))[j]
+    } else {
+    g1 = paste0(var, "_party_opp")
+    g2 = paste0(var, "_party_opp")
+    }
+      
+    us[, paste0(newvar, w)] = us[, paste0(g1, w)]
+    us[us$party_bin == "Democrat" & !is.na(us$party_bin), paste0(newvar, w)] = 
+      us[us$party_bin == "Democrat" & !is.na(us$party_bin), paste0(g2, w)]
+    
+    }
+  
+  # dimensions: out-partisans, out-ideologues, out-policy
+  us[, paste0(var, w)] = rowMeans(cbind(
+    select(us, paste0(var_party, w), paste0(var_ideo, w)), 
+    rowMeans(select(us, paste0(var, paste0("_", us_issues), w)), 
+             na.rm = T),
+    na.rm = T))
+  }}
+
+## POLAND
+
+# invert all feeling thermometer variables
+for(i in names(pl)[grepl("ft_", names(pl))]){pl[,i] = invert(pl[,i])}
+
+pl_issues = c("women", "rel", "eu", "econ")
+
+# identify affective polarization variable according to partisanship
+for (i in 1:3){
+  
+  var = c("ft", "under", "stupid")[i]
+  var_party = paste0(var, "_party_op")
+  var_ideo = paste0(var, "_ideo_op")
+  
+  for (w in c("_pre", "_post")){
+    
+  if (i %in% c(1,2)){
+    
+    for (j in 1:2){
+     
+    newvar = list(var_party, var_ideo)[[j]]
+    
+    g1 = c(paste0(var, "_sld"), paste0(var, "_lw"))[j]
+    g2 = c(paste0(var, "_pis"), paste0(var,"_rw"))[j]
+      
+    pl[, paste0(newvar, w)] = pl[, paste0(g1, w)]
+    pl[pl$party_bin == "Anti" & !is.na(pl$party_bin), paste0(newvar, w)] = 
+      pl[pl$party_bin == "Anti" & !is.na(pl$party_bin), paste0(g2, w)]
+    
+    }
+  
+  # dimensions: out-partisans, out-ideologues, out-policy
+  pl[, paste0(var, w)] = rowMeans(
+    
+    data.frame(
+    # party 
+    rowMeans(select(pl, c(paste0(var_party, w), paste0("ft_far", w))), 
+             na.rm = T),
+    # ideology 
+    select(pl, paste0(var_ideo, w)),
+    # policy
+    rowMeans(select(pl, paste0(var, paste0("_", pl_issues), w)), na.rm = T)),
+    na.rm = T)
+  } else {
+      
+  pl[, paste0(var, w)] = rowMeans(cbind(
+    select(pl, "stupid_far_pre"), 
+    rowMeans(select(pl, paste0(var, paste0("_", pl_issues), w)), na.rm = T)),
+    na.rm = T)
+    }}}
+```
+
+> Attribution of malevolence 
+
+**United States** and **Poland**
+
+To what extent do you agree with the following statements?
+[1 'strongly disagree' 7 'strongly agree']
+
+  - I worry that [out-partisans] are deliberately trying to hurt America.
+  - [out-partisans] are knowingly sabotaging the country.
+  - [out-partisans] don't care about [country]
+  - I believe [out-partisans] genuinely want what is best for [country] (-)
+  - I trust [out-partisans] to do what they think is best for [country] (-)
+
+```{r}
+# UNITED STATES
+
+# invert negatively coded items 
+for (i in 4:5){
+us[,paste0("malvol_", i, "_pre")] = invert(us[,paste0("malvol_", i, "_pre")])
+us[,paste0("malvol_", i, "_post")] = invert(us[,paste0("malvol_", i, "_post")])
+}
+
+# calculate row means
+us$malvol_pre = rowMeans(select(us, paste0("malvol_", 1:5, "_pre")), na.rm = T)
+us$malvol_post = 
+  rowMeans(select(us, paste0("malvol_", 1:5, "_post")), na.rm = T)
+
+# POLAND 
+
+# identify malevolence variable according to partisanship
+for (i in 1:5){
+  for (w in c("_pre", "_post")){
+    pl[, paste0("malvol_", i, w)] = pl[, paste0("malvol_gov_", i, w)]
+    pl[pl$party_bin == "Pro", paste0("malvol_", i, w)] = 
+      pl[pl$party_bin == "Pro", paste0("malvol_op_", i, w)]
+}}
+
+# invert negatively coded items 
+for (i in 4:5){
+pl[,paste0("malvol_", i, "_pre")] = invert(pl[,paste0("malvol_", i, "_pre")])
+pl[,paste0("malvol_", i, "_post")] = invert(pl[,paste0("malvol_", i, "_post")])
+}
+
+# calculate row means
+pl$malvol_pre = rowMeans(select(pl, paste0("malvol_", 1:5, "_pre")), na.rm = T)
+pl$malvol_post = 
+  rowMeans(select(pl, paste0("malvol_", 1:5, "_post")), na.rm = T)
+```
+
+> Lack of support for compromise 
+
+**United States** and **Poland**
+
+Which position most closely reflects your views?
+[1 'left position' 7 'right position']
+
+  - Politicians must be faithful to their values, no matter what - 
+    Politicians must cooperate with each other to be effective first of all, 
+    sometimes at the expense of values
+  - Politicians should never compromise their values - Sometimes compromise 
+    is necessary when solving important problems
+  - I want politicians who stick to their opinions and principles - 
+    I want politicians who cooperate with each other
+  - Values should never be violated - Principles should never block progress
+
+```{r}
+# UNITED STATES
+
+# invert inversely coded scales
+for (i in 1:4){
+  us[,paste0("comp_", i, "_pre")] = invert(us[,paste0("comp_", i, "_pre")])
+  us[,paste0("comp_", i, "_post")] = invert(us[,paste0("comp_", i, "_post")])
+}
+
+# calculate row means
+us$comp_pre = rowMeans(select(us, paste0("comp_", 1:4, "_pre")), na.rm = T)
+us$comp_post = rowMeans(select(us, paste0("comp_", 1:4, "_post")), na.rm = T)
+
+# POLAND 
+
+# invert inversely coded scales
+for (i in 1:4){
+  pl[,paste0("comp_", i, "_pre")] = invert(pl[,paste0("comp_", i, "_pre")])
+  pl[,paste0("comp_", i, "_post")] = invert(pl[,paste0("comp_", i, "_post")])
+}
+
+# calculate row means
+pl$comp_pre = rowMeans(select(pl, paste0("comp_", 1:4, "_pre")), na.rm = T)
+pl$comp_post = rowMeans(select(pl, paste0("comp_", 1:4, "_post")), na.rm = T)
+```
+
+
+> Perceived polarization
+
+How much do you agree or disagree with the following statements:
+[1 'Strongly disagree' 7 'Strongly agree']
+
+**United States**
+
+  - Democrats and Republicans hate each other.
+  - The differences between Democrats and Republicans are too great 
+    to be reconciled.
+  - Americans are greatly divided when it comes to the most important values.
+  - Polarization in America is greater than ever before.
+  
+**Poland**
+
+  - Supporters and opponents of the current government in Poland hate each other
+  - The differences between the supporters and opponents of the current 
+    government are too great to reconcile them
+  - Poles are very divided when it comes to the most important values
+  - Currently, the polarization of views in Poland is greater than ever before
+
+```{r}
+# UNITED STATES
+us$perpol_pre = rowMeans(select(us, paste0("perpol_", 1:4, "_pre")), na.rm = T)
+us$perpol_post = 
+  rowMeans(select(us, paste0("perpol_", 1:4, "_post")), na.rm = T)
+
+# POLAND
+pl$perpol_pre = rowMeans(select(pl, paste0("perpol_", 1:4, "_pre")), na.rm = T)
+pl$perpol_post = 
+  rowMeans(select(pl, paste0("perpol_", 1:4, "_post")), na.rm = T)
+```
+
+> Decreased personal well-being 
+
+**United States** and **Poland** (post-survey only): 
+
+  1. *Mental well-being:* We would like to ask you about how you felt
+  and about some activities you might have done in the last week. Over the past 
+  week, how much have you felt each of the following?
+  [1 'Not at all' 7 'To a great extent']
+
+    - Depressed 
+    - Anxious 
+    - Happy (-)
+    - Satisfied with life (-)
+    - Optimistic about the future (-)
+    - Calm and peaceful (-)
+    
+  2. *Physical well-being:* We would like to ask you about how you felt and 
+  about some activities you might have done in the last week. How many days
+  in the last week have you done the following 
+  [0 to 7]
+
+    - Had one or more alcoholic beverage 
+    - Ordered pizza or other fast food
+    - Felt like hitting someone 
+    - Gotten into an argument 
+    - Exercised (-)
+
+```{r}
+# UNITED STATES 
+
+# invert inversely coded items 
+for (i in 3:6){
+  us[, paste0("well_feel_", i, "_post")] = 
+    invert(us[, paste0("well_feel_", i, "_post")])
+}
+
+us$well_act_5_post = invert(us$well_act_5_post)
+
+# calculate row means 
+us$well_feel_post = 
+  rowMeans(select(us, paste0("well_feel_", 1:6, "_post")), na.rm = T)
+us$well_act_post = 
+  rowMeans(select(us, paste0("well_act_", 1:5, "_post")), na.rm = T)
+
+# POLAND
+
+# invert inversely coded items 
+for (i in 3:6){
+  pl[, paste0("well_feel_", i, "_post")] = 
+    invert(pl[, paste0("well_feel_", i, "_post")])
+}
+
+pl$well_act_5_post = invert(pl$well_act_5_post)
+
+# calculate row means 
+pl$well_feel_post = 
+  rowMeans(select(pl, paste0("well_feel_", 1:6, "_post")), na.rm = T)
+pl$well_act_post = 
+  rowMeans(select(pl, paste0("well_act_", 1:5, "_post")), na.rm = T)
+```
+
+## Generate analysis datasets
+
+Reshape data into long dataset
+```{r}
+# UNITED STATES
+colnames(us) = gsub("_pre", "_w1", names(us))
+colnames(us) = gsub("_post", "_w2", names(us))
+
+us_long = long_panel(us, prefix = "_w", 
+                     begin = 1, end = 2, label_location = "end")
+
+# POLAND
+colnames(pl) = gsub("_pre", "_w1", names(pl))
+colnames(pl) = gsub("_post", "_w2", names(pl))
+
+pl_long = long_panel(pl, prefix = "_w", 
+                     begin = 1, end = 2, label_location = "end")
+```
+
+## Rescale variables
+
+Rescale variables 
+```{r}
+# To data frame
+pl_long = data.frame(pl_long)
+us_long = data.frame(us_long)
+
+# Dependent variables between 0 and 100
+dvs = c("know", "know_fac", "ptc", "att_str", "att_imp", "ft", "under", 
+        "stupid", "malvol", "comp", "perpol", "well_act", "well_feel")
+
+for (var in dvs){
+  pl_long[,paste0(var, "_r")] = rescale_100(pl_long[,var])
+  us_long[,paste0(var, "_r")] = rescale_100(us_long[,var])
+}
+
+# Exposure variables natural logarithm rescaled to 0 and 100
+for (var in c("news", "news_like")){
+  pl_long[, paste0(var, "_r")] = pl_long[,var] + 1
+  pl_long[, paste0(var, "_r")] = log(pl_long[, paste0(var, "_r")])
+  pl_long[, paste0(var, "_r")] = rescale_100(pl_long[, paste0(var, "_r")])
+  
+  us_long[, paste0(var, "_r")] = us_long[,var] + 1
+  us_long[, paste0(var, "_r")] = log(us_long[, paste0(var, "_r")])
+  us_long[, paste0(var, "_r")] = rescale_100(us_long[, paste0(var, "_r")])
+}
+```
+
+## Store data
+
+Save data
+```{r}
+write.csv(pl, paste0(datadir, "pl_survey_wide.csv"))
+write.csv(us, paste0(datadir, "us_survey_wide.csv"))
+write.csv(pl_long, paste0(datadir, "pl_survey_long.csv"))
+write.csv(us_long, paste0(datadir, "us_survey_long.csv"))
+```

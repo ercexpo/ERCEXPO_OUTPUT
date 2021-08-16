@@ -1,0 +1,80 @@
+---
+title: "14. Figure B.4[B.5]"
+---
+
+Function to create geom_ridges plot
+```{r}
+ridgeme = function(data){
+  rescale2 = function(x){
+      x = x/max(x, na.rm = T)
+      x = x*100
+  }
+    
+  data =  transform(data, value2 = ave(value, variable, FUN=rescale2))
+  
+  maxval = 10
+  bins = maxval + 1
+  
+  p = ggplot(data, aes(x = value2, y = 0, fill = variable)) + 
+    geom_density_ridges(stat="binline", bins = bins) + 
+    scale_fill_grey() + 
+    facet_wrap(variable~ ., ncol = 4) + 
+    scale_x_continuous(breaks = seq(0,100,10), limits = c(-10,110)) + 
+    theme_minimal() + 
+    theme(legend.position = 'None', 
+        axis.title = element_blank(), axis.text.y = element_blank(), 
+        panel.grid.minor = element_blank(),
+        axis.text.x = element_text(angle = 90, size = 8, hjust = 1))
+  return(p)
+}
+```
+
+Plot data 
+```{r}
+source('helpers.R')
+
+for (j in 1:2){
+  
+  datname = c("us_survey_long.csv", "pl_survey_long.csv")[j]
+  cntry = c("United States", "Poland")[j]
+  no = c(4,5)[j]
+  
+  fig = select(read.csv(paste0(datadir, datname)),
+               c("know_r", "know_fac_r", "ptc_r", 
+                 "att_str_r", "att_imp_r",
+                 "ft_r", "under_r", "stupid_r", 
+                 "malvol_r", "comp_r", "perpol_r", 
+                 "well_feel_r", "well_act_r", 
+                 "news", "news_like")) %>% 
+  setNames( 
+    c('Political Engagement:\nSelf-perceived Knowledge', 
+      'Political Engagement:\nActual Knowledge', 
+      'Political Engagement:\nParticipation', 
+      'Attitude Polarization:\nAttitude Strength', 
+      'Attitude Polarization:\nAttitude Importance',
+      'Affective Polarization:\nFeeling Thermometer', 
+      'Affective Polarization:\nLack of Understanding', 
+      'Affective Polarization:\nStupid', 
+      'Negative System Perceptions:\nAttribution of Malevolence',
+      'Negative System Perceptions:\nNo Support for Compromise',
+      'Negative System Perceptions:\nPerceived Polarization',
+      'Well-being: Mental', 
+      'Well-being: Physical', 
+      'News Exposure: Total', 
+      'News Exposure: Like-minded')) %>% 
+    melt() %>% 
+    subset(., !is.na(value)) %>%
+    ridgeme(.)
+  
+  print(fig)
+  
+  outname = 
+    paste0("Figure B.", no, " - Variable distributions ", cntry, ".png")
+
+ggsave(paste0(figdir, outname), height = 7, width = 7, device = "png")
+}
+```
+
+
+
+

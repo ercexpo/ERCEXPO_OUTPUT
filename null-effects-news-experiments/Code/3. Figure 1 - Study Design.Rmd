@@ -1,0 +1,649 @@
+---
+title: "3. Figure 1 - Study Design"
+---
+
+```{r}
+knitr::opts_chunk$set(message = FALSE, warning = FALSE)
+
+# source file 
+source('helpers.R')
+
+# survey data
+pl = read_sav(paste0(datadir, "pl_survey_all.sav"))
+us = read.csv(paste0(datadir, "us_survey_all.csv"))
+
+us_compl = read.csv(paste0(datadir, "us_wide.csv"))
+
+# participant ids
+pl_ids = pl$person_id[which(pl$condition != "")]
+us_ids = us$person_id[which(!is.na(us$condition))]
+
+# trace totals
+totals_pl = read_xlsx(paste0(datadir, "pl_trace_totals.xlsx"))
+totals_us = read.csv(paste0(datadir, "us_trace_totals.csv"))
+
+# trace active days
+act_pl = read.csv(paste0(datadir, "pl_trace_activedays.csv"))
+act_us = read.csv(paste0(datadir, "us_trace_activedays.csv"))
+
+# trace visits
+visits_pl = read.csv(paste0(datadir, "pl_trace_visits.csv"))
+visits_us = read.csv(paste0(datadir, "us_trace_visits.csv"))
+```
+
+## The Data
+
+```{r}
+out = data.frame(
+  stat = c(
+    "Number of Respondents", 
+    "Total raw web visits", 
+    "Total unique web visits", 
+    "Median number of web domains", 
+    "Median online active days", 
+    "Median day range web visits", 
+    "Demographics: % Female", 
+    "Demographics: % Age 18-24", 
+    "Demographics: % Age 25-34", 
+    "Demographics: % Age 35-44", 
+    "Demographics: % Age 45-54", 
+    "Demographics: % Age 55+",
+    "Demographics: % Education less than high school", 
+    "Demographics: % Education vocational degree",
+    "Demographics: % Education high school",
+    "Demographics: % Education some college",
+    "Demographics: % Education junior college",
+    "Demographics: % Education bachelor degree", 
+    "Demographics: % Education graduate school"
+  ))
+  
+for (i in 1:6){
+  vars = c(paste0("pl_", c("w1", "w2", "w3")),
+           paste0("us_", c("w1", "w2", "w3")))[i]
+  out[,vars] = NA
+}
+
+addto = function(stat, rowname, colname){
+  out[grep(rowname, out$stat), grep(colname, names(out))] = stat
+  return(out)
+}
+```
+
+Generate dummy variables for participation in each wave and create a list of
+person_ids per wave. 
+```{r}
+# Poland
+pl = pl %>% 
+  mutate(., w1 = case_when(
+    survey_start_time_w1 %in% "" ~ 0,
+    survey_start_time_w1 %notin% "" ~ 1)) %>% 
+  mutate(., w2 = case_when(
+    survey_start_time_pre %in% "" ~ 0,
+    survey_start_time_pre %notin% "" ~ 1)) 
+
+pl_w1 = subset(pl, w1 == 1)$person_id
+pl_w2 = subset(pl, w2 == 1)$person_id
+
+# United States
+us = us %>% 
+  mutate(., w1 = case_when(
+    StartDate_w1 %in% "" ~ 0,
+    StartDate_w1 %notin% "" ~ 1)) %>% 
+  mutate(., w2 = case_when(
+    is.na(StartDate_w2) ~ 0,
+    StartDate_w2 %notin% "" ~ 1)) %>% 
+  mutate(., w3 = case_when(
+    is.na(StartDate_w3) ~ 0,
+    StartDate_w3 %notin% "" ~ 1)) 
+
+us_w1 = subset(us, w1 == 1)$person_id
+us_w2 = subset(us, w2 == 1)$person_id
+us_w3 = subset(us, w3 == 1)$person_id
+```
+
+Calculate the number of respondents per wave
+```{r}
+names(totals_pl)
+names(totals_us)
+
+totals_pl = rename(totals_pl, 
+                   raw_visits_w0 = visits_raw_w0,
+                   raw_visits_w1 = visits_raw_w1, 
+                   raw_visits_w2 = visits_raw_w2, 
+                   raw_visits_w3 = visits_raw_w3, 
+                   raw_visits_w4 = visits_raw_w4)
+
+```
+
+
+```{r}
+for (country in c("pl", "us")){
+  
+  if (country == "pl"){
+    waves = 1:2; survey = pl; totals = totals_pl
+    edu_cat = c("Education: Less than high school", 
+                "Education: Vocational degree", 
+                "Education: High school", "Education: Some college", 
+                "Education: Bachelor degree", "Education: Graduate school")
+    edu_row = c(13, 14, 15, 16, 18, 19)
+    
+  } else {
+    waves = 1:3; survey = us; totals = totals_us
+    edu_cat = c("Education: Less than high school", "Education: High school",
+                "Education: Junior college", "Education: Bachelor", 
+                "Education: Graduate school")
+    edu_row = c(13, 15, 17, 18, 19)
+  }
+  
+  for (w in waves){
+    wave = paste0("w", w)
+    ids = survey[survey[,wave] == 1, ]$person_id
+    
+    # number of respondents
+    out = addto(
+      nrow(survey[survey[,wave] == 1 & survey$person_id %in% ids, ]), 
+      out$stat[1],
+      paste0(country, "_", wave)
+    )
+    
+    # total raw web visits 
+    out = addto(
+      sum(totals[totals$person_id %in% ids, paste0("raw_visits_", wave)]),
+      out$stat[2], paste0(country, "_", wave)) 
+    
+    # total unique web visits
+    out = addto(
+      sum(totals[totals$person_id %in% ids, paste0("visits_u_", wave)]),
+      out$stat[3], paste0(country, "_", wave))
+    
+    # median number of web domains
+    out = addto(median((totals[totals$person_id %in% ids, 
+                               paste0("count_domains_", wave)])[[1]]),
+      out$stat[4], paste0(country, "_", wave))
+    
+    # median online active days
+    out = addto(median((totals[totals$person_id %in% ids, 
+                               paste0("active_days_", wave)])[[1]]),
+      out$stat[5], paste0(country, "_", wave))
+    
+    # median day range web visits
+    out = addto(median((totals[totals$person_id %in% ids, 
+                               paste0("day_range_", wave)])[[1]]),
+      out$stat[6], paste0(country, "_", wave))
+    
+    # demographics: gender
+    out = addto(
+      nrow(survey[survey[,wave] == 1 & survey$person_id %in% ids & 
+                  survey$sex == "Female", ]) / 
+      nrow(survey[survey[,wave] == 1 & survey$person_id %in% ids,]) * 100, 
+      out$stat[7],
+      paste0(country, "_", wave)
+    )
+    
+    # demographics: age
+    for (age_cat in 1:5){
+      
+      a = c("Age: 18–24", "Age: 25–34", "Age: 35–44", 
+            "Age: 45–54", "Age: 55+")[age_cat]
+      
+      out = addto(
+        nrow(survey[survey[,wave] == 1 & survey$person_id %in% ids & 
+                    survey$age_cat == a, ]) / 
+        nrow(survey[survey[,wave] == 1 & survey$person_id %in% ids,]) * 100, 
+        out$stat[7 + age_cat],
+        paste0(country, "_", wave)
+        )
+    }
+    
+    # demographics: education
+    for (e in 1:length(edu_cat)){
+      edu = edu_cat[e]; edu_n = edu_row[e]
+      
+      out = addto(
+        nrow(survey[survey[,wave] == 1 & survey$person_id %in% ids & 
+                    survey$edu_cat == edu, ]) / 
+        nrow(survey[survey[,wave] == 1 & survey$person_id %in% ids,]) * 100, 
+        out$stat[edu_n],
+        paste0(country, "_", wave)
+        )
+      
+    }}}
+
+write_xlsx(out, paste0(figdir, "Figure 3 - The data.xlsx"))
+```
+
+## Randomization Checks
+
+```{r}
+randomcheck = function(cntry_abb, variable){
+#  cntry_abb = "pl"; variable = "sex"
+  
+  if (cntry_abb == "pl"){
+    data = pl[pl$person_id %in% pl_ids,]; country = "Poland"} 
+  if (cntry_abb == "us"){
+    data = us[us$person_id %in% us_ids,]; country = "United States"}
+  
+  var = data[, variable]
+  condition = data[,"condition"]
+  
+  if (length(var) > 2){
+    tab = table(condition, var)
+  } else {
+    tab = table(condition[[1]], var[[1]])
+  }
+  
+  out = data.frame(var = variable, prop.table(tab, margin = 1))
+  colnames(out) = c("Variable", "Condition", "Value", "Proportion")
+  
+  out$ChiSq = chisq.test(tab)$p.value
+  out$Country = country
+  
+  return(out)
+}
+```
+
+```{r}
+checks = list()
+
+for (cntry in c("pl", "us")){
+  for (var in c("sex", "age_cat", "edu_cat")){
+    checks[[length(checks) + 1]] = randomcheck(cntry, var)
+  }
+}
+
+checks = do.call(rbind, checks)
+
+write_xlsx(checks, paste0(figdir, "Figure 3 - Randomization checks.xlsx"))
+```
+
+
+## Compliance checks
+
+Self-reported compliance checks: % of respondents who reported an increase in 
+news consumption over the last 2 days.
+```{r}
+# (a) by day 
+
+comp_pl = list()
+
+for (i in 1:6){
+  
+  tab = data.frame(prop.table(table(
+    select(pl, c("condition", paste0("y1eksp", i, "_c", i)))), 
+    margin = 1))
+  
+  tab = tab[tab[,2] == 1 & tab[,1] != "", ]
+  tab$check = i
+  
+  colnames(tab) = c("condition", "value", "prop", "check")
+  
+  comp_pl[[i]] = tab
+  
+}
+
+comp_pl = do.call(rbind, comp_pl)
+
+write_xlsx(comp_pl, 
+           paste0(tabdir, "Figure 1 - Compliance Poland (self-report)"))
+
+# (b) total
+for (i in 1:6){
+  pl[,paste0("y1eksp", i, "_c", i)] = recode(
+    pl[,paste0("y1eksp", i, "_c", i)], `1` = 1, `2` = 0)
+}
+
+pl$compliance = recode(
+  rowSums(select(pl, paste0("y1eksp", 1:6, "_c", 1:6)), na.rm = T),
+  `0` = 0, `1` = 1, `2` = 1, `3` = 1, `4` = 1, `5` = 1, `6` = 1 
+)
+  
+prop.table(table(pl$condition, pl$compliance), margin = 1)
+```
+
+Behavioral compliance check: % respondents who actually increased their online
+news consumption compared to the 14 days before the experiment.
+```{r}
+# person-day dyads
+pl_exp = pl[pl$person_id %in% pl_ids,]
+pl_exp$date_start = as.Date(
+  str_split_fixed(gsub('"|\\\\', "", pl_exp$survey_start_time_pre), " ", 2)[,1],
+  format = "%Y-%m-%d")
+
+pl_exp$date_before = pl_exp$date_start - 14
+pl_exp$date_after = pl_exp$date_start + 14
+
+pl_exp = select(pl_exp, c("person_id", "date_start", "date_before", 
+                          "date_after", "condition"))
+
+visits_sum_pl = list()
+
+for (i in 1:nrow(pl_exp)){
+  dat = data.frame(
+    date = seq(pl_exp$date_before[i], pl_exp$date_after[i], 1))
+  
+  dat$person_id = pl_exp$person_id[i]
+  dat$date_start = pl_exp$date_start[i]
+  dat$date_before = pl_exp$date_before[i] 
+  dat$date_after = pl_exp$date_after[i]
+  
+  dat$condition = pl_exp$condition[i]
+  
+  visits_sum_pl[[i]] = dat
+}
+
+visits_sum_pl = do.call(rbind, visits_sum_pl)
+visits_sum_pl$date = as.character(visits_sum_pl$date)
+
+visits_sum_pl = 
+  left_join(
+    visits_sum_pl, 
+    aggregate(id ~ person_id + created_local_date, 
+              data = visits_pl[visits_pl$person_id %in% pl_ids,], 
+              FUN = length) %>% 
+    setNames(., c("person_id", "date", "newscount")), 
+    by = c("person_id", "date")
+  )
+
+visits_sum_pl$newscount[is.na(visits_sum_pl$newscount)] = 0
+  
+visits_sum_pl$date = as.Date(visits_sum_pl$date, format = "%Y-%m-%d")
+
+# subset respondents who submitted min 7 days of browsing data 
+act_pl = left_join(act_pl, select(pl_exp, c("person_id", "date_start")),
+                   by = "person_id")
+act_pl$mn_start = act_pl$date_start - 14
+act_pl$mn_end = act_pl$date_start + 14
+
+act_pl$created_local_date = as.Date(act_pl$created_local_date, 
+                                    format = "%Y-%m-%d")
+
+act_pl = act_pl[act_pl$created_local_date >= act_pl$mn_start & 
+                act_pl$created_local_date <= act_pl$mn_end & 
+                !is.na(act_pl$date_start),]
+
+act_pl$time_mn[
+  act_pl$created_local_date < act_pl$date_start] = "pre" 
+
+act_pl$time_mn[
+  act_pl$created_local_date > act_pl$date_start] = "post" 
+
+act_ids_pl = as.character(subset(data.frame(table(act_pl %>% 
+  aggregate(created_local_date ~ person_id + time_mn, data = ., FUN = length) %>%
+  subset(., created_local_date > 7) %>%
+  select(., "person_id"))), Freq == 2)$Var1)
+
+# (a) by day 
+visits_sum_pl_day = visits_sum_pl[visits_sum_pl$person_id %in% act_ids_pl,]
+
+visits_sum_pl_day$time_mn[
+  visits_sum_pl_day$date < visits_sum_pl_day$date_start] = "t-1 to t-30" 
+
+for (i in 1:6){
+  t = seq(2,12,2)[i]
+  visits_sum_pl_day$time_mn[
+    visits_sum_pl_day$date <= visits_sum_pl_day$date_start + t & 
+      visits_sum_pl_day$date > visits_sum_pl_day$date_start + t - 2
+    ] = paste0("t+",t)
+}
+
+visits_sum_pl_day = aggregate(newscount ~ person_id + time_mn + condition, 
+                          data = visits_sum_pl_day, FUN = mean)
+
+visits_sum_pl_day = left_join(subset(visits_sum_pl_day, time_mn != "t-1 to t-30"), 
+          subset(visits_sum_pl_day, time_mn == "t-1 to t-30"), 
+          suffix = c("_during", "_before"), by = "person_id")
+
+visits_sum_pl_day$newscount_diff = 
+  visits_sum_pl_day$newscount_during - visits_sum_pl_day$newscount_before
+
+visits_sum_pl_day$increase = 0
+visits_sum_pl_day$increase[visits_sum_pl_day$newscount_diff > 0] = 1
+
+visits_sum_pl_day = aggregate(
+  increase ~ condition_before + time_mn_during, 
+  data = visits_sum_pl_day, FUN = mean
+)
+
+visits_sum_pl_day$increase = visits_sum_pl_day$increase*100
+
+# (b) total
+visits_sum_pl_tot = visits_sum_pl[visits_sum_pl$person_id %in% act_ids_pl,]
+
+visits_sum_pl_tot$time_mn[
+  visits_sum_pl_tot$date < visits_sum_pl_tot$date_start] = "pre" 
+
+visits_sum_pl_tot$time_mn[
+  visits_sum_pl_tot$date > visits_sum_pl_tot$date_start] = "post" 
+
+visits_sum_pl_tot = 
+  visits_sum_pl_tot %>% 
+  aggregate(newscount ~ person_id + time_mn + condition, FUN = sum, 
+            data = .) %>% 
+  mutate(time_mn = as.factor(time_mn)) %>% 
+  panel_data(., id = "person_id", wave = "time_mn") %>% 
+  widen_panel(., separator = "_") %>% 
+  mutate(diff = newscount_post - newscount_pre) %>%
+  mutate(diff = case_when(diff <= 0 ~ "Decrease", diff > 0 ~ "Increase"))
+
+prop.table(table(visits_sum_pl_tot$condition, visits_sum_pl_tot$diff))
+```
+
+
+## No News Experiment
+
+> Randomization Checks
+
+```{r}
+# SEX 
+prop.table(table(
+  us$condition[which(us$person_id %in% us_ids)],
+  us$gender_w0_fac[which(us$person_id %in% us_ids)]), 
+  margin = 1)
+
+chisq.test(
+  table(us$condition[which(us$person_id %in% us_ids)],
+        us$gender_w0_fac[which(us$person_id %in% us_ids)]))
+
+# AGE 
+prop.table(table(
+  us$condition[which(us$person_id %in% us_ids)],
+  us$age_cat[which(us$person_id %in% us_ids)]), 
+  margin = 1)
+
+chisq.test(
+  table(us$condition[which(us$person_id %in% us_ids)],
+        us$age_cat[which(us$person_id %in% us_ids)]))
+
+# EDUCATION 
+prop.table(table(
+  us$condition[which(us$person_id %in% us_ids)],
+  us$edu_cat[which(us$person_id %in% us_ids)]), 
+  margin = 1)
+
+chisq.test(
+  table(us$condition[which(us$person_id %in% us_ids)],
+        us$edu_cat[which(us$person_id %in% us_ids)]))
+```
+
+  
+> Compliance Checks
+
+Self-reported compliance checks: % of respondents who reported an increase in 
+news consumption over the last 2 days.
+```{r}
+us_compl = read.csv(paste0(datadir, "us_wide.csv"))
+for (i in 1:5){
+  us_compl[,paste0("ppl_check", i)] = 
+           case_when(us_compl[,paste0("ppl_check", i)] == 1 ~ 0, 
+                           us_compl[,paste0("ppl_check", i)] %in% 2:4 ~ 1)
+}
+
+# (a) by day 
+
+comp_us = list()
+
+for (i in 1:5){
+  
+  tab = data.frame(prop.table(table(
+    select(us_compl, c(paste0("ppl_check", i))))))
+  
+  tab = tab[tab[,"Var1"] == "1", ]
+  tab$check = i
+  
+  colnames(tab) = c("value", "prop", "check")
+  
+  comp_us[[i]] = tab
+}
+
+comp_us = do.call(rbind, comp_us)
+
+write_xlsx(comp_us, 
+           paste0(tabdir, "Figure 1 - Compliance United States (self-report)"))
+
+# (b) total
+
+us_compl$compliance = recode(
+  rowSums(select(us_compl, paste0("ppl_check", 1:5)), na.rm = TRUE) * 
+  NA ^ (rowSums(!is.na(select(us_compl, paste0("ppl_check", 1:5)))) == 0),
+  `0` = 0, `1` = 1, `2` = 1, `3` = 1, `4` = 1, `5` = 1
+)
+  
+prop.table(table(us_compl$compliance))
+```
+
+
+Behavioral compliance check: % respondents who actually decreased their online
+news consumption compared to the 7 days before the experiment.
+```{r}
+# person-day dyads
+us_exp = us[us$person_id %in% us_ids,]
+us_exp$date_start = as.Date(
+  str_split_fixed(gsub('"|\\\\', "", us_exp$StartDate_w3), " ", 2)[,1],
+  format = "%Y-%m-%d")
+
+us_exp$date_before = us_exp$date_start - 6
+us_exp$date_after = us_exp$date_start + 6
+
+us_exp = select(us_exp, c("person_id", "date_start", "date_before", 
+                          "date_after", "condition"))
+
+visits_sum_us = list()
+
+for (i in 1:nrow(us_exp)){
+  dat = data.frame(
+    date = seq(us_exp$date_before[i], us_exp$date_after[i], 1))
+  
+  dat$person_id = us_exp$person_id[i]
+  dat$date_start = us_exp$date_start[i]
+  dat$date_before = us_exp$date_before[i] 
+  dat$date_after = us_exp$date_after[i]
+  
+  dat$condition = us_exp$condition[i]
+  
+  visits_sum_us[[i]] = dat
+}
+
+visits_sum_us = do.call(rbind, visits_sum_us)
+visits_sum_us$date = as.character(visits_sum_us$date)
+
+visits_sum_us = 
+  left_join(
+    visits_sum_us, 
+    aggregate(id ~ person_id + created_local_date, 
+              data = visits_us[visits_us$person_id %in% us_ids,], 
+              FUN = length) %>% 
+    setNames(., c("person_id", "date", "newscount")), 
+    by = c("person_id", "date")
+  ) 
+
+visits_sum_us$newscount[is.na(visits_sum_us$newscount)] = 0
+  
+visits_sum_us$date = as.Date(visits_sum_us$date, format = "%Y-%m-%d")
+
+# subset respondents who submitted min 7 days of browsing data 
+act_us = read.csv(paste0(datadir, "us_trace_activedays.csv"))
+
+act_us = left_join(act_us, select(us_exp, c("person_id", "date_start")),
+                   by = "person_id")
+act_us$nn_start = act_us$date_start - 6
+act_us$nn_end = act_us$date_start + 6
+
+act_us$created_local_date = as.Date(act_us$created_local_date, 
+                                    format = "%Y-%m-%d")
+
+act_us = act_us[act_us$created_local_date >= act_us$nn_start & 
+                act_us$created_local_date <= act_us$nn_end & 
+                !is.na(act_us$date_start),]
+
+act_us$time_nn[
+  act_us$created_local_date < act_us$date_start] = "pre" 
+
+act_us$time_nn[
+  act_us$created_local_date > act_us$date_start] = "post" 
+
+act_ids_us = as.character(subset(data.frame(table(
+  act_us %>% 
+  aggregate(created_local_date ~ person_id + time_nn, data = ., FUN = length) %>%
+  subset(., created_local_date > 5) %>%
+  select(., "person_id"))), Freq == 2)$Var1)
+
+# (a) by day 
+visits_sum_us_day = visits_sum_us[visits_sum_us$person_id %in% act_ids_us,]
+
+visits_sum_us_day$time_nn[
+  visits_sum_us_day$date < visits_sum_us_day$date_start] = "t-1 to t-6" 
+
+for (i in 1:5){
+  t = i
+  visits_sum_us_day$time_nn[
+    visits_sum_us_day$date <= visits_sum_us_day$date_start + t & 
+      visits_sum_us_day$date > visits_sum_us_day$date_start + t - 1
+    ] = paste0("t+",t)
+}
+
+visits_sum_us_day = aggregate(newscount ~ person_id + time_nn + condition, 
+                          data = visits_sum_us_day, FUN = mean)
+
+visits_sum_us_day = left_join(subset(visits_sum_us_day, time_nn != "t-1 to t-6"), 
+          subset(visits_sum_us_day, time_nn == "t-1 to t-6"), 
+          suffix = c("_during", "_before"), by = "person_id")
+
+visits_sum_us_day$newscount_diff = 
+  visits_sum_us_day$newscount_during - visits_sum_us_day$newscount_before
+
+visits_sum_us_day$decrease = 0
+visits_sum_us_day$decrease[visits_sum_us_day$newscount_diff < 0] = 1
+
+visits_sum_us_day = aggregate(
+  decrease ~ condition_during + time_nn_during, 
+  data = visits_sum_us_day, FUN = mean
+)
+
+visits_sum_us_day$decrease = visits_sum_us_day$decrease*100
+
+# (b) total 
+visits_sum_us_tot = visits_sum_us[visits_sum_us$person_id %in% act_ids_us,]
+
+visits_sum_us_tot$time_nn[
+  visits_sum_us_tot$date < visits_sum_us_tot$date_start] = "pre" 
+
+visits_sum_us_tot$time_nn[
+  visits_sum_us_tot$date > visits_sum_us_tot$date_start] = "post" 
+
+visits_sum_us_tot = 
+  visits_sum_us_tot %>% 
+  aggregate(newscount ~ person_id + time_nn + condition, FUN = sum, 
+            data = .) %>% 
+  mutate(time_nn = as.factor(time_nn)) %>% 
+  panel_data(., id = "person_id", wave = "time_nn") %>% 
+  widen_panel(., separator = "_") %>% 
+  mutate(diff = newscount_post - newscount_pre) %>%
+  mutate(diff = case_when(diff >= 0 ~ "Increase", diff < 0 ~ "Decrease"))
+
+prop.table(table(visits_sum_us_tot$condition, visits_sum_us_tot$diff))
+```
+
+
+
+
+

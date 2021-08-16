@@ -1,0 +1,92 @@
+---
+title: "13. Table B.5 - Summary statistics"
+---
+
+Import data 
+```{r}
+source('helpers.R')
+
+vars = c("know_r", "know_fac_r", "ptc_r", "att_str_r", "att_imp_r",
+         "ft_r", "under_r", "stupid_r", "malvol_r", "comp_r", "perpol_r", 
+         "well_feel_r", "well_act_r", "news", "news_like", "wave")
+  
+df = read.csv(paste0(datadir, "us_survey_long.csv")) %>% 
+  select(., vars) %>%
+  mutate(country = "United States") %>% 
+  bind_rows(
+    list(., read.csv(paste0(datadir, "pl_survey_long.csv")) %>%
+            select(., vars) %>%
+            mutate(country = "Poland")))
+```
+
+```{r}
+dvs = c('Political Engagement:\nSelf-perceived Knowledge', 
+        'Political Engagement:\nActual Knowledge', 
+        'Political Engagement:\nParticipation', 
+        'Attitude Polarization:\nAttitude Strength', 
+        'Attitude Polarization:\nAttitude Importance',
+        'Affective Polarization:\nFeeling Thermometer', 
+        'Affective Polarization:\nLack of Understanding', 
+        'Affective Polarization:\nStupid', 
+        'Negative System Perceptions:\nAttribution of Malevolence',
+        'Negative System Perceptions:\nNo Support for Compromise',
+        'Negative System Perceptions:\nPerceived Polarization',
+        'Well-being: Mental', 
+        'Well-being: Physical', 
+        'News Exposure: Total', 
+        'News Exposure: Like-minded')
+
+summ = list()
+
+summ_df = function(x){
+    x = data.frame(psych::describe(x))
+    return(x)
+  }
+
+stats = c("mean", "median", "sd")
+
+for (i in 1:15){
+  
+  var = vars[i]
+  varname = dvs[i]
+  
+  summ[[i]] = cbind(varname, 
+      summ_df(df[which(df$wave ==1 & df$country == "United States"), var]) %>%
+        select(., stats) %>%
+        setNames(paste0(c("mean", "median", "sd"), "_us_w1")),
+      summ_df(df[which(df$wave ==2 & df$country == "United States"), var]) %>%
+        select(., stats) %>%
+        setNames(paste0(c("mean", "median", "sd"), "_us_w2")),
+      summ_df(df[which(df$wave ==1 & df$country == "Poland"), var]) %>%
+        select(., stats) %>%
+        setNames(paste0(c("mean", "median", "sd"), "_pl_w1")),
+      summ_df(df[which(df$wave ==2 & df$country == "Poland"), var]) %>%
+        select(., stats) %>% 
+        setNames(paste0(c("mean", "median", "sd"), "_pl_w2")), 
+      summ_df(df[, var]) %>%
+            select(., c("min", "max")))
+}
+
+summ = do.call(rbind, summ)
+
+for (i in names(summ)){
+  if (grepl("^n_|var", i) == F){
+    summ[,i] = sprintf("%.2f", summ[,i])
+  }
+}
+
+summ = rbind(
+  c("", "United States", emptycell(5), "Poland", emptycell(7)), 
+  c("", rep(c("Pre-Survey", emptycell(2), "Post-Survey", emptycell(2)), 2), emptycell(2)),
+  c("", rep(c("Mean", "Median", "Std.Dev."), 4), "Min", "Max"),
+  summ
+)
+
+write_xlsx(summ, paste0(tabdir, "Table B.5 - Summary statistics.xlsx"))
+```
+
+```{r}
+latex(summ, file = "")
+```
+
+

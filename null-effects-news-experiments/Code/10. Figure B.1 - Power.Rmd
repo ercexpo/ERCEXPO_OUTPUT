@@ -1,0 +1,32 @@
+---
+title: "10. Figure B.1 - Power"
+---
+
+
+```{r}
+source('helpers.R')
+
+source("helpers.R")
+df = read_xlsx(paste0(figdir, 'Figure B.1 - Data.xlsx'))
+df$power = df$power*100
+```
+
+Determine denominator degrees of freedom for each estimation
+
+  - Main Effects: 2 parameters (intercept + condition) 
+  - Interaction Effects: 4 parameters
+
+```{r}
+ggplot(data = df, aes(x = effsize, y = power, color = model)) + 
+  geom_point(size = 1) + 
+  geom_line(size = 1) + 
+  xlab("Cohen's f") + ylab("% Power") + 
+  scale_x_continuous(trans='log', breaks = c(0.002, 0.02, 0.2)) + 
+  facet_grid(analysis ~ country) + 
+  scale_color_manual(values = c("goldenrod1", "grey70")) + 
+  theme_minimal() + 
+  theme(legend.position = 'bottom', legend.title = element_blank())
+
+ggsave(paste0(figdir, "Figure B.1 - Power.png"), height = 6, width = 6)
+```
+

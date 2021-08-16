@@ -1,0 +1,108 @@
+---
+title: "6. Figure A.2[A.3] - Classification news domains"
+---
+
+Import data 
+```{r}
+knitr::opts_chunk$set(message = FALSE, warning = FALSE)
+
+# source file 
+source('helpers.R')
+
+# trace visits
+visits_pl = read.csv(paste0(datadir, "pl_trace_visits.csv")) %>%
+  subset(., person_id %in% pl_ids & wave == 2) %>%
+  aggregate(id ~ score_domain, data = ., FUN = length) %>% 
+  setNames(., c("domain", "count")) %>% 
+  left_join(., read.csv(paste0(datadir, "pl_trace_ideology.csv")), 
+            by = "domain") %>% 
+  select(., c("domain", "count", "Ideology.point.estimate", 
+              "Ideology.3.level")) %>%
+  setNames(., c("domain", "count", "ideo", "ideo_cat")) %>% 
+  mutate(ideo_cat = dplyr::recode(ideo_cat,
+    left = "Left", 
+    center = "Center",
+    right = "Right",
+    .default = "No Score"
+  ))  %>% 
+  mutate(hj = as.numeric(
+    case_when(ideo >= 0 ~ "1", ideo < 0 ~ "0", is.na(ideo) ~ "1"))) %>% 
+  mutate(domain = str_remove(str_split_fixed(domain, "\\.", 2)[,1], " "))
+
+visits_us = read.csv(paste0(datadir, "us_trace_visits.csv")) %>% 
+  subset(., person_id %in% us_ids & wave == 3) %>%
+  aggregate(id ~ score_domain, data = ., FUN = length) %>% 
+  setNames(., c("domain", "count")) %>% 
+  left_join(., read.csv(paste0(datadir, "us_trace_ideology.csv")), 
+            by = "domain") %>% 
+  select(., c("domain", "count", "Wilson.score")) %>%
+  setNames(., c("domain", "count", "ideo")) %>%
+  mutate(ideo_cat = case_when(
+    ideo < -0.2 ~ "Left", 
+    ideo >= -0.2 & ideo <= 0.08 ~ "Center",
+    ideo > 0.08 ~ "Right",
+    is.na(ideo) ~ "No Score"
+  )) %>% 
+  mutate(hj = as.numeric(
+    case_when(ideo >= 0 ~ "1", ideo < 0 ~ "0", is.na(ideo) ~ "1"))) %>% 
+  mutate(domain = str_remove(str_split_fixed(domain, "\\.", 2)[,1], " "))
+
+domains = rbind(
+  cbind(country = "Poland", visits_pl), 
+  cbind(country = "United States", visits_us))
+
+write.csv(domains, paste0(figdir, "Figure A.2[A.3] - Data.csv"))
+```
+
+Plot data
+```{r}
+for (i in 1:2){
+  
+N = 5
+dat = subset(list(visits_us, visits_pl)[[i]], 
+             count >= N & ideo_cat != "No Score")
+
+# Order data according to ideology score
+dat = dat[order(dat$ideo),]
+dat$order = with(dat, ave(rep(1, nrow(dat)), ideo_cat, FUN = seq_along))
+dat$count = log(dat$count)
+
+dat$x = 0
+
+dat$ideo_cat = factor(
+  dat$ideo_cat, 
+  levels = c("Left","Center","Right"), 
+  labels=c("(a) Left","(b) Center","(c) Right")
+)
+
+p = ggplot(data = dat) + 
+  geom_segment(data = dat, 
+               aes(x = x, xend = ideo, y = order, yend = order), size = 0.5) + 
+  geom_point(data = dat, aes(x = ideo, y = order, size = count, 
+                            group = ideo_cat, fill = ideo), shape = 21) + 
+  geom_text(data = subset(dat, ideo < 0), 
+            aes(x = x, y = order, label = domain, hjust= hj), 
+            vjust=0.5, size = 2, nudge_x = 0.05) +
+  geom_text(data = subset(dat, ideo >= 0), 
+            aes(x = x, y = order, label = domain, hjust= hj), 
+            vjust=0.5, size = 2, nudge_x = -0.05) +
+  scale_fill_gradient(low = "white", high = "goldenrod1") + 
+  facet_wrap(.~ ideo_cat, strip.position ="top", ncol = 3) + 
+  theme_minimal() + 
+  theme(legend.position = 'None', legend.title = element_blank(),
+        axis.title = element_blank(), panel.grid = element_blank(), 
+        axis.text = element_blank()) + 
+  scale_y_reverse( lim=c(max(dat$order),1))
+
+print(p)
+
+if (i == 1){h = 20}else{h = 11}
+
+ggsave(paste0(figdir,
+              "Figure A.", c(2:3)[i], "- Ideology scores ", 
+              c("United States", "Poland")[i], ".png"), 
+       units = "cm", height = h, width = 18)
+}
+```
+
+

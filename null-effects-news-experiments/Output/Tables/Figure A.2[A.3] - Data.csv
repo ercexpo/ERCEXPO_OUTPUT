@@ -1,0 +1,987 @@
+"","country","domain","count","ideo","ideo_cat","hj"
+"1","Poland","24kurier",151,0.0815941,"Center",1
+"2","Poland","24opole",253,NA,"No Score",1
+"3","Poland","24tp",10,NA,"No Score",1
+"4","Poland","24wspolnota",93,NA,"No Score",1
+"5","Poland","300polityka",139,0.03367715,"Center",1
+"6","Poland","antyradio",455,-0.6173885,"Left",0
+"7","Poland","aszdziennik",145,-0.3909585,"Left",0
+"8","Poland","bankier",2394,-0.140503,"Center",0
+"9","Poland","biznesalert",46,0.07636325,"Center",1
+"10","Poland","businessinsider",4,-0.25715,"Center",0
+"11","Poland","chojna24",2,NA,"No Score",1
+"12","Poland","cire",13,-0.150829,"Center",0
+"13","Poland","crowdmedia",70,-1.22596,"Left",0
+"14","Poland","deon",260,0.552313,"Center",1
+"15","Poland","dlahandlu",245,-0.3427745,"Left",0
+"16","Poland","dorzeczy",301,0.394327,"Center",1
+"17","Poland","dts24",5,1.81786,"Right",1
+"18","Poland","dziennik",2709,-0.07544245,"Center",0
+"19","Poland","dziennikbaltycki",1614,-0.370353,"Left",0
+"20","Poland","dzienniklodzki",524,-0.301646,"Left",0
+"21","Poland","dzienniknarodowy",26,0.9793125,"Right",1
+"22","Poland","dziennikpolski24",452,0.1517115,"Center",1
+"23","Poland","dziennikwschodni",952,0.08158575,"Center",1
+"24","Poland","dziennikzachodni",1271,-0.335372,"Left",0
+"25","Poland","echodnia",2684,NA,"No Score",1
+"26","Poland","eglos",29,NA,"No Score",1
+"27","Poland","egospodarka",225,NA,"Right",1
+"28","Poland","elka",127,NA,"No Score",1
+"29","Poland","energetyka24",13,0.1833965,"Center",1
+"30","Poland","epoznan",335,NA,"No Score",1
+"31","Poland","expressbydgoski",230,-0.1992975,"Center",0
+"32","Poland","expressilustrowany",423,1.37126,"Right",1
+"33","Poland","fakt",4876,-0.2300765,"Center",0
+"34","Poland","faktykaliskie",125,1.072905,"Right",1
+"35","Poland","forbes",139,-0.326394,"Left",0
+"36","Poland","forsal",248,-0.0941791,"Center",0
+"37","Poland","fronda",82,0.637337,"Right",1
+"38","Poland","gazeta",2,NA,"No Score",1
+"39","Poland","gazeta",9679,-0.269236,"Center",0
+"40","Poland","gazetakrakowska",2457,-0.1010165,"Center",0
+"41","Poland","gazetalubuska",328,-0.3829765,"Left",0
+"42","Poland","gazetaolsztynska",214,NA,"No Score",1
+"43","Poland","gazetapolska",18,0.754251,"Right",1
+"44","Poland","gazetaprawna",567,-0.06490515,"Center",0
+"45","Poland","gazetawroclawska",2651,-0.3755445,"Left",0
+"46","Poland","gdansk",1102,-0.3701575,"Left",0
+"47","Poland","gemius",942,-1.893695,"Left",0
+"48","Poland","gk24",281,-1.14765,"Left",0
+"49","Poland","glos24",6,NA,"No Score",1
+"50","Poland","gloswielkopolski",1025,-0.1472005,"Center",0
+"51","Poland","gosc",267,0.4217125,"Center",1
+"52","Poland","gospodarkapodkarpacka",2,NA,"No Score",1
+"53","Poland","gp24",627,-0.3790395,"Left",0
+"54","Poland","gs24",528,0.03220385,"Center",1
+"55","Poland","info",18,NA,"No Score",1
+"56","Poland","infor",1030,-0.482937,"Left",0
+"57","Poland","infowire",5,-1.15843,"Left",0
+"58","Poland","innpoland",171,-0.5170745,"Left",0
+"59","Poland","interia",21976,-0.225544,"Center",0
+"60","Poland","interia",515,NA,"No Score",1
+"61","Poland","jarocinska",269,NA,"No Score",1
+"62","Poland","konecki24",7,NA,"No Score",1
+"63","Poland","korso",12,NA,"No Score",1
+"64","Poland","krakow",2487,0.02497095,"Center",1
+"65","Poland","kresy",38,NA,"No Score",1
+"66","Poland","kronikatygodnia",2,NA,"No Score",1
+"67","Poland","krytykapolityczna",183,-0.4926275,"Left",0
+"68","Poland","kurier-ilawski",1,NA,"No Score",1
+"69","Poland","kurierlubelski",1107,0.04418785,"Center",1
+"70","Poland","kurierostrowski",6,NA,"No Score",1
+"71","Poland","kurierzawiercianski",50,NA,"No Score",1
+"72","Poland","lewica",3,NA,"No Score",1
+"73","Poland","limanowa",2,NA,"No Score",1
+"74","Poland","linia",2,NA,"No Score",1
+"75","Poland","lm",58,-1.437775,"Left",0
+"76","Poland","lowiczanin",3,NA,"No Score",1
+"77","Poland","lublin",292,-0.0178358,"Center",0
+"78","Poland","lublin112",1109,0.220825,"Center",1
+"79","Poland","medianarodowe",22,0.75298,"Right",1
+"80","Poland","money",7308,-0.192644,"Center",0
+"81","Poland","mp",816,NA,"No Score",1
+"82","Poland","mpolska24",1,0.5000135,"Right",1
+"83","Poland","nasz-glos",1,NA,"No Score",1
+"84","Poland","naszdziennik",9,0.849048,"Right",1
+"85","Poland","naszemiasto",9387,NA,NA,1
+"86","Poland","natemat",1287,-0.443727,"Left",0
+"87","Poland","nczas",383,NA,"No Score",1
+"88","Poland","newseria",82,NA,"No Score",1
+"89","Poland","newsweek",636,-0.313437,"Left",0
+"90","Poland","niedziela",279,0.930695,"Right",1
+"91","Poland","niezalezna",3127,0.381909,"Right",1
+"92","Poland","niezlomni",6,1.35313,"Right",1
+"93","Poland","nj24",1,NA,"No Score",1
+"94","Poland","noizz",775,-0.861018,"Left",0
+"95","Poland","nowiny",74,1.126575,"Right",1
+"96","Poland","nowiny24",716,0.21639,"Center",1
+"97","Poland","nowosci",3,-0.1790035,"Center",0
+"98","Poland","nowytydzien",6,NA,"No Score",1
+"99","Poland","nto",573,-0.228554,"Center",0
+"100","Poland","o2",18446,NA,"No Score",1
+"101","Poland","oko",350,-0.455286,"Left",0
+"102","Poland","olsztyn",6,NA,"No Score",1
+"103","Poland","onet",32675,NA,NA,1
+"104","Poland","opoka",122,1.122265,"Right",1
+"105","Poland","ostrowiecka",54,NA,"No Score",1
+"106","Poland","palukitv",8,NA,"No Score",1
+"107","Poland","pap",143,0.164181,"Center",1
+"108","Poland","parkiet",69,-0.289,"Left",0
+"109","Poland","pb",531,-0.1598485,"Left",0
+"110","Poland","pch24",388,0.9024425,"Right",1
+"111","Poland","pikio",576,-0.06767865,"Center",0
+"112","Poland","podkarpacie",1,NA,"No Score",1
+"113","Poland","polityczek",66,-1.172565,"Left",0
+"114","Poland","polityka",237,-0.269386,"Left",0
+"115","Poland","politykazdrowotna",18,-0.105348,"Center",0
+"116","Poland","polsatnews",383,0.01005236,"Center",1
+"117","Poland","polskatimes",321,-0.1718295,"Left",0
+"118","Poland","polskieradio",608,0.2779875,"Right",1
+"119","Poland","polskieradio24",115,0.2429185,"Center",1
+"120","Poland","pomorska",542,-0.1598795,"Center",0
+"121","Poland","popularne",99,NA,"No Score",1
+"122","Poland","poradnikprzedsiebiorcy",497,NA,"No Score",1
+"123","Poland","poranny",664,-0.494448,"Left",0
+"124","Poland","portalprzemyski",2,NA,"No Score",1
+"125","Poland","propertynews",16,-0.4828765,"Left",0
+"126","Poland","przegladkoninski",1,NA,"No Score",1
+"127","Poland","przegladlokalny",5,NA,"No Score",1
+"128","Poland","przegladpiaseczynski",1,NA,"No Score",1
+"129","Poland","przekroj",3,-0.487576,"Left",0
+"130","Poland","przelom",5,1.22464,"Right",1
+"131","Poland","radioglos",2,0.8267005,"Right",1
+"132","Poland","radiolodz",4,NA,"No Score",1
+"133","Poland","radiomaryja",140,0.4404165,"Center",1
+"134","Poland","radiopoznan",7,NA,"No Score",1
+"135","Poland","radiowroclaw",43,NA,"No Score",1
+"136","Poland","radiozet",2175,-0.3339595,"Left",0
+"137","Poland","rmf24",1223,-0.0895723,"Center",0
+"138","Poland","rp",1451,-0.001113415,"Center",0
+"139","Poland","sadeczanin",258,1.816935,"Right",1
+"140","Poland","salon24",51,0.215968,"Center",1
+"141","Poland","satkurier",2511,0.0846083,"Center",1
+"142","Poland","se",1926,-0.008034355,"Center",0
+"143","Poland","shareinfo",27,0.8907755,"Right",1
+"144","Poland","slowopodlasia",12,NA,"No Score",1
+"145","Poland","starachowice-net",1,NA,"No Score",1
+"146","Poland","stefczyk",63,NA,"No Score",1
+"147","Poland","stooq",3193,NA,"No Score",1
+"148","Poland","strajk",5,-1.681755,"Left",0
+"149","Poland","strzelecopolski",1,NA,"No Score",1
+"150","Poland","supernowosci24",85,0.05767885,"Center",1
+"151","Poland","superstacja",7,-0.2442585,"Center",0
+"152","Poland","swinoujskie",2,NA,"No Score",1
+"153","Poland","tc",1,NA,"No Score",1
+"154","Poland","tc",1,NA,"No Score",1
+"155","Poland","telewizjarepublika",126,0.3742345,"Center",1
+"156","Poland","temi",10,NA,"No Score",1
+"157","Poland","terazprudnik",1,NA,"No Score",1
+"158","Poland","thefad",15,-1.076575,"Left",0
+"159","Poland","tokfm",617,-0.2930055,"Left",0
+"160","Poland","trojmiasto",2114,-0.323536,"Left",0
+"161","Poland","tustolica",290,NA,"No Score",1
+"162","Poland","tv-trwam",29,0.563657,"Right",1
+"163","Poland","tv",1,NA,"No Score",1
+"164","Poland","tvn",1273,-0.2746895,"Left",0
+"165","Poland","tvn24",5250,NA,NA,1
+"166","Poland","tvn24bis",601,-0.3841885,"Left",0
+"167","Poland","tvp",458,0.232738,"Center",1
+"168","Poland","tvp",23,0.5669735,"Right",1
+"169","Poland","tvtoya",2,NA,"No Score",1
+"170","Poland","tygodnik",4,NA,"No Score",1
+"171","Poland","tygodnikits",2,NA,"No Score",1
+"172","Poland","tygodnikpowszechny",16,-0.343528,"Left",0
+"173","Poland","tygodnikprzeglad",18,-0.846214,"Left",0
+"174","Poland","tygodniksiedlecki",18,0.0669487,"Center",1
+"175","Poland","tygodnikzamojski",3,NA,"No Score",1
+"176","Poland","tyna",24,NA,"No Score",1
+"177","Poland","tysol",74,0.6779305,"Right",1
+"178","Poland","videosejm",9,0.260015,"Left",1
+"179","Poland","warszawa",642,-0.229741,"Left",0
+"180","Poland","warszawawpigulce",223,0.04579635,"Center",1
+"181","Poland","wgospodarce",67,0.353207,"Center",1
+"182","Poland","wiadomo",17,-0.8306365,"Left",0
+"183","Poland","wiesci24",591,-0.633473,"Left",0
+"184","Poland","wirtualnemedia",498,-0.1320975,"Center",0
+"185","Poland","wm",316,NA,"No Score",1
+"186","Poland","wmeritum",452,0.6671375,"Right",1
+"187","Poland","wnet",6,0.766412,"Right",1
+"188","Poland","wnp",2132,-0.0901318,"Center",0
+"189","Poland","wp",74812,-0.173036,"Center",0
+"190","Poland","wpolityce",437,0.308965,"Center",1
+"191","Poland","wprawo",32,0.8901065,"Right",1
+"192","Poland","wprost",708,-0.02743985,"Center",0
+"193","Poland","wroclaw",2098,-0.3811625,"Left",0
+"194","Poland","wrzesnia",2,NA,"No Score",1
+"195","Poland","ws-24",1,NA,"No Score",1
+"196","Poland","wsensie",17,0.7474535,"Right",1
+"197","Poland","wsieci24",2,NA,"No Score",1
+"198","Poland","wsieciprawdy",15,0.3869845,"Center",1
+"199","Poland","wspolczesna",465,-0.2447785,"Left",0
+"200","Poland","wspolnota",10,-0.399207,"Left",0
+"201","Poland","wyborcza",316,NA,"No Score",1
+"202","Poland","wyborcza",10811,-0.330398,"Left",0
+"203","Poland","wykop",15055,0.01606615,"Center",1
+"204","Poland","wysokienapiecie",54,-0.1650715,"Left",0
+"205","Poland","zycie",84,NA,"No Score",1
+"206","Poland","zyciesiedleckie",9,NA,"No Score",1
+"207","United States","",8,NA,"No Score",1
+"208","United States","abc",14,-0.2167,"Left",0
+"209","United States","abc7",31,0.0957,"Right",1
+"210","United States","abcnews",390,-0.0384,"Center",0
+"211","United States","abqjournal",8,-0.1089,"Center",0
+"212","United States","abs-cbn",1,NA,"No Score",1
+"213","United States","adelaidenow",3,-0.0409,"Center",0
+"214","United States","adn",5,-0.1124,"Center",0
+"215","United States","advocate",9,-0.7671,"Left",0
+"216","United States","adweek",116,-0.1908,"Center",0
+"217","United States","afp",4,-0.3436,"Left",0
+"218","United States","afr",1,-0.1531,"Center",0
+"219","United States","aim",1,0.8851,"Right",1
+"220","United States","ajc",43,-0.0813,"Center",0
+"221","United States","ajnews",2,NA,"No Score",1
+"222","United States","al",32,0.0245,"Center",1
+"223","United States","alibi",1,-0.4655,"Left",0
+"224","United States","aljazeera",22,-0.5265,"Left",0
+"225","United States","alligator",1,0.092,"Right",1
+"226","United States","alternet",38,-0.6378,"Left",0
+"227","United States","americanpress",1,NA,"No Score",1
+"228","United States","americanthinker",6,0.8718,"Right",1
+"229","United States","amestrib",1,0.2889,"Right",1
+"230","United States","amny",2,-0.4638,"Left",0
+"231","United States","annistonstar",24,0.1353,"Right",1
+"232","United States","ap",11,-0.5079,"Left",0
+"233","United States","apnews",191,-0.3279,"Left",0
+"234","United States","app",13,0.0875,"Right",1
+"235","United States","arcamax",2086,-0.0805,"Center",0
+"236","United States","argusleader",1,0.4518,"Right",1
+"237","United States","arkansasonline",4,0.0116,"Center",1
+"238","United States","arktimes",1,-0.6297,"Left",0
+"239","United States","armytimes",4,0.4144,"Right",1
+"240","United States","atlantablackstar",6,-0.7064,"Left",0
+"241","United States","auroranewsregister",9,NA,"No Score",1
+"242","United States","austinchronicle",1,-0.5237,"Left",0
+"243","United States","axios",49,-0.3361,"Left",0
+"244","United States","azcapitoltimes",1,-0.0592,"Center",0
+"245","United States","azcentral",81,0.1353,"Right",1
+"246","United States","bakersfield",2,-0.0985,"Center",0
+"247","United States","baltimoresun",24,-0.2034,"Left",0
+"248","United States","bangordailynews",2,-0.1939,"Center",0
+"249","United States","bankrate",209,NA,"No Score",1
+"250","United States","battlecreekenquirer",31,NA,"No Score",1
+"251","United States","baxterbulletin",2,NA,"No Score",1
+"252","United States","baytownsun",15,NA,"No Score",1
+"253","United States","bbc",131,-0.2004,"Left",0
+"254","United States","bbc",303,-0.2578,"Left",0
+"255","United States","bdtonline",1,0.2999,"Right",1
+"256","United States","beaumontenterprise",2,-0.2306,"Left",0
+"257","United States","beforeitsnews",38,0.6788,"Right",1
+"258","United States","bellinghamherald",2,-0.0871,"Center",0
+"259","United States","billingsgazette",1,-0.2894,"Left",0
+"260","United States","billoreilly",1,0.9113,"Right",1
+"261","United States","bipartisanreport",6,-0.7469,"Left",0
+"262","United States","birminghamtimes",1,NA,"No Score",1
+"263","United States","bizjournals",90,0.1077,"Right",1
+"264","United States","bizpacreview",5,0.887,"Right",1
+"265","United States","blacknews",1,-0.6366,"Left",0
+"266","United States","blavity",6,-0.8179,"Left",0
+"267","United States","bloomberg",122,-0.0792,"Center",0
+"268","United States","boiseweekly",8,-0.0072,"Center",0
+"269","United States","boston",22,-0.2612,"Left",0
+"270","United States","bostonglobe",40,-0.3452,"Left",0
+"271","United States","bostonherald",8,0.0754,"Center",1
+"272","United States","bradenton",3,0.3184,"Right",1
+"273","United States","breitbart",945,0.7419,"Right",1
+"274","United States","broadcastingcable",7,-0.1685,"Center",0
+"275","United States","brooklyneagle",2,-0.5115,"Left",0
+"276","United States","brownsvilleherald",1,NA,"No Score",1
+"277","United States","buckscountycouriertimes",4,0.1298,"Right",1
+"278","United States","buffalonews",2,-0.0199,"Center",0
+"279","United States","business-standard",2,-0.1273,"Center",0
+"280","United States","businessinsider",1166,-0.0373,"Center",0
+"281","United States","buzzfeed",1325,-0.1616,"Center",0
+"282","United States","buzzfeednews",175,-0.1616,"Center",0
+"283","United States","c-span",55,-0.1794,"Center",0
+"284","United States","calgaryherald",2,-0.0708,"Center",0
+"285","United States","campusreform",54,NA,"No Score",1
+"286","United States","candgnews",10,NA,"No Score",1
+"287","United States","canoncitydailyrecord",1,NA,"No Score",1
+"288","United States","cantonrep",1,0.3176,"Right",1
+"289","United States","capegazette",1,NA,"No Score",1
+"290","United States","capemaycountyherald",1,0.1802,"Right",1
+"291","United States","capitalgazette",1,0.1496,"Right",1
+"292","United States","carrollconews",1,NA,"No Score",1
+"293","United States","cbc",63,-0.23,"Left",0
+"294","United States","cbn",15,0.7299,"Right",1
+"295","United States","cbs",838,-0.0024,"Center",0
+"296","United States","cbslocal",259,0.1124,"Right",1
+"297","United States","cbsnews",574,-0.017,"Center",0
+"298","United States","cdapress",1,0.6114,"Right",1
+"299","United States","cecildaily",4,0.1744,"Right",1
+"300","United States","cedarrepublican",8,NA,"No Score",1
+"301","United States","centraljersey",1,-0.1506,"Center",0
+"302","United States","centralmaine",2,-0.2782,"Left",0
+"303","United States","charlotteobserver",13,0.009,"Center",1
+"304","United States","chicagobusiness",1,-0.1564,"Center",0
+"305","United States","chicagoreader",3,-0.7109,"Left",0
+"306","United States","chicagotribune",120,-0.1587,"Center",0
+"307","United States","chicoer",1,NA,"No Score",1
+"308","United States","chinadaily",9,-0.0837,"Center",0
+"309","United States","chipleypaper",3,NA,"No Score",1
+"310","United States","chippewa",2,NA,"No Score",1
+"311","United States","chron",100,-0.1725,"Center",0
+"312","United States","cincinnati",9,0.1238,"Right",1
+"313","United States","citizen-times",2,-0.0089,"Center",0
+"314","United States","citybeat",2,-0.3737,"Left",0
+"315","United States","citypages",2,-0.5999,"Left",0
+"316","United States","civilbeat",3,NA,"No Score",1
+"317","United States","cjr",2,-0.5885,"Left",0
+"318","United States","claremoreprogress",5,NA,"No Score",1
+"319","United States","clarionledger",2,-0.2341,"Left",0
+"320","United States","claytodayonline",1,NA,"No Score",1
+"321","United States","cleburnetimesreview",6,NA,"No Score",1
+"322","United States","cleveland",10,-0.047,"Center",0
+"323","United States","clintonherald",1,NA,"No Score",1
+"324","United States","cnbc",378,0.0811,"Right",1
+"325","United States","cnn",3376,-0.1183,"Center",0
+"326","United States","cnsnews",9,0.8578,"Right",1
+"327","United States","collegemagazine",2,-0.056,"Center",0
+"328","United States","columbiabasinherald",1,NA,"No Score",1
+"329","United States","columbian",3,-0.2822,"Left",0
+"330","United States","columbusalive",1,NA,"No Score",1
+"331","United States","commentarymagazine",1,0.4875,"Right",1
+"332","United States","commercialappeal",13,-0.0222,"Center",0
+"333","United States","commondreams",11,-0.6526,"Left",0
+"334","United States","concordmonitor",2,-0.1948,"Center",0
+"335","United States","conservativereview",4,0.9036,"Right",1
+"336","United States","consortiumnews",1,0.1885,"Right",1
+"337","United States","conwaydailysun",1,NA,"No Score",1
+"338","United States","cookpolitical",32,-0.3078,"Left",0
+"339","United States","cornellsun",1,-0.5338,"Left",0
+"340","United States","counterpunch",3,-0.338,"Left",0
+"341","United States","courant",10,-0.1115,"Center",0
+"342","United States","courier-journal",21,0.0697,"Center",1
+"343","United States","courierpostonline",3,-0.086,"Center",0
+"344","United States","courierpress",1,0.2355,"Right",1
+"345","United States","crainsdetroit",1,-0.0461,"Center",0
+"346","United States","crainsnewyork",1,-0.4086,"Left",0
+"347","United States","crescent-news",16,NA,"No Score",1
+"348","United States","crisismagazine",5,0.872,"Right",1
+"349","United States","crooked",1,NA,"No Score",1
+"350","United States","crooksandliars",9,-0.7006,"Left",0
+"351","United States","csmonitor",2,-0.2341,"Left",0
+"352","United States","ctpost",4,-0.0683,"Center",0
+"353","United States","ctvnews",11,-0.0435,"Center",0
+"354","United States","currentaffairs",5,-0.6556,"Left",0
+"355","United States","daily-chronicle",5,NA,"No Score",1
+"356","United States","dailybulletin",1,0.1866,"Right",1
+"357","United States","dailycal",3,-0.3892,"Left",0
+"358","United States","dailycaller",163,0.6958,"Right",1
+"359","United States","dailydot",3951,-0.401,"Left",0
+"360","United States","dailyherald",11,0.1127,"Right",1
+"361","United States","dailyitem",3,0.2385,"Right",1
+"362","United States","dailykos",1965,-0.7052,"Left",0
+"363","United States","dailylocal",6,0.2307,"Right",1
+"364","United States","dailymail",559,0.2105,"Right",1
+"365","United States","dailynews",5,0.0592,"Center",1
+"366","United States","dailypress",2,-0.0883,"Center",0
+"367","United States","dailyprogress",3,-0.3991,"Left",0
+"368","United States","dailyrepublic",1,NA,"No Score",1
+"369","United States","dailysignal",32,0.8842,"Right",1
+"370","United States","dailytexanonline",4,-0.3615,"Left",0
+"371","United States","dailywire",102,0.8496,"Right",1
+"372","United States","dallasnews",137,-0.2175,"Left",0
+"373","United States","dallasobserver",8,0.1962,"Right",1
+"374","United States","daytondailynews",3,0.0576,"Center",1
+"375","United States","deccanchronicle",1,-0.072,"Center",0
+"376","United States","delawareonline",15,-0.0891,"Center",0
+"377","United States","delmarvanow",1,0.1305,"Right",1
+"378","United States","democracynow",362,-0.744,"Left",0
+"379","United States","democratandchronicle",9,0.0169,"Center",1
+"380","United States","demopolistimes",1,NA,"No Score",1
+"381","United States","denverpost",48,0.0352,"Center",1
+"382","United States","deseretnews",1,0.5662,"Right",1
+"383","United States","desertsun",2,-0.1163,"Center",0
+"384","United States","desmoinesregister",7,0.2004,"Right",1
+"385","United States","detroitnews",97,0.0931,"Right",1
+"386","United States","dispatch",12,-0.1494,"Center",0
+"387","United States","djournal",1,NA,"No Score",1
+"388","United States","dnaindia",1,-0.1687,"Center",0
+"389","United States","dnews",2,NA,"No Score",1
+"390","United States","dnronline",3,NA,"No Score",1
+"391","United States","dodgecountynews",1,NA,"No Score",1
+"392","United States","drudgereport",327,0.8839,"Right",1
+"393","United States","duluthnewstribune",2,-0.0077,"Center",0
+"394","United States","durangoherald",1,-0.1143,"Center",0
+"395","United States","dw",84,-0.2763,"Left",0
+"396","United States","eagletribune",14,0.0239,"Center",1
+"397","United States","eastbaytimes",2,0.0924,"Right",1
+"398","United States","easternshorepost",1,NA,"No Score",1
+"399","United States","eastvalleytribune",1,0.3395,"Right",1
+"400","United States","economist",15,-0.2302,"Left",0
+"401","United States","elitedaily",54,0.0368,"Center",1
+"402","United States","elkodaily",1,0.3863,"Right",1
+"403","United States","elpais",8,-0.3631,"Left",0
+"404","United States","elpasotimes",1,-0.3264,"Left",0
+"405","United States","emanuelcountylive",1,NA,"No Score",1
+"406","United States","emergencyemail",386,NA,"No Score",1
+"407","United States","esquire",164,-0.4561,"Left",0
+"408","United States","euronews",1,-0.2407,"Left",0
+"409","United States","evesun",1,NA,"No Score",1
+"410","United States","examiner",1,NA,"No Score",1
+"411","United States","express",334,0.4419,"Right",1
+"412","United States","factcheck",27,-0.3078,"Left",0
+"413","United States","fair",1,-0.6554,"Left",0
+"414","United States","fairmontsentinel",1,NA,"No Score",1
+"415","United States","fark",1,-0.2713,"Left",0
+"416","United States","fayobserver",1,0.0832,"Right",1
+"417","United States","fcc",15,NA,"No Score",1
+"418","United States","federalreserve",1,NA,"No Score",1
+"419","United States","fillmorecountyjournal",1,NA,"No Score",1
+"420","United States","finance",83749,0.1467,"Right",1
+"421","United States","fivethirtyeight",387,-0.388,"Left",0
+"422","United States","flkeysnews",5,-0.0106,"Center",0
+"423","United States","floridatoday",10,0.3232,"Right",1
+"424","United States","forbes",1181,0.0465,"Center",1
+"425","United States","foreignaffairs",5,-0.3666,"Left",0
+"426","United States","foreignpolicy",10,-0.4485,"Left",0
+"427","United States","fortune",40,-0.08,"Center",0
+"428","United States","foxbusiness",234,0.6062,"Right",1
+"429","United States","foxnews",2692,0.6079,"Right",1
+"430","United States","france24",28,-0.1466,"Center",0
+"431","United States","fredericknewspost",67,-0.0966,"Center",0
+"432","United States","freebeacon",9,0.7926,"Right",1
+"433","United States","freep",51,-0.1156,"Center",0
+"434","United States","fresnobee",7,-0.0989,"Center",0
+"435","United States","ft",33,-0.1956,"Center",0
+"436","United States","galesburg",14,NA,"No Score",1
+"437","United States","gallup",30,-0.1041,"Center",0
+"438","United States","gazette",67,0.4195,"Right",1
+"439","United States","gazettenet",1,-0.5306,"Left",0
+"440","United States","gazettextra",1,0.2856,"Right",1
+"441","United States","globegazette",1,0.3357,"Right",1
+"442","United States","gmnews",10,NA,"No Score",1
+"443","United States","godanriver",2,NA,"No Score",1
+"444","United States","goerie",23,-0.0732,"Center",0
+"445","United States","gonzalesinquirer",1,NA,"No Score",1
+"446","United States","good",4,-0.5948,"Left",0
+"447","United States","goodnewsnetwork",2,-0.0995,"Center",0
+"448","United States","gothamgazette",1,-0.7524,"Left",0
+"449","United States","goupstate",5,0.2843,"Right",1
+"450","United States","governing",4,-0.2802,"Left",0
+"451","United States","grandhaventribune",12,NA,"No Score",1
+"452","United States","grandlakenews",8,NA,"No Score",1
+"453","United States","greeleytribune",1,0.2,"Right",1
+"454","United States","greensboro",3,-0.0961,"Center",0
+"455","United States","greenvilleonline",3,0.1553,"Right",1
+"456","United States","greenwichtime",17,-0.1122,"Center",0
+"457","United States","griffindailynews",5,NA,"No Score",1
+"458","United States","gulflive",1,NA,"No Score",1
+"459","United States","gwinnettdailypost",1,NA,"No Score",1
+"460","United States","haaretz",42,-0.3902,"Left",0
+"461","United States","hawaiitribune-herald",1,NA,"No Score",1
+"462","United States","hbr",27,-0.0821,"Center",0
+"463","United States","hcn",1,-0.592,"Left",0
+"464","United States","hcpress",1,NA,"No Score",1
+"465","United States","heavy",109,-0.0231,"Center",0
+"466","United States","herald-citizen",1,NA,"No Score",1
+"467","United States","herald-dispatch",1,0.1113,"Right",1
+"468","United States","herald-review",2,NA,"No Score",1
+"469","United States","heraldandnews",2,0.0693,"Center",1
+"470","United States","heraldandtribune",2,NA,"No Score",1
+"471","United States","heraldextra",1,0.6102,"Right",1
+"472","United States","heraldmailmedia",101,0.2935,"Right",1
+"473","United States","heraldnet",3,0.0329,"Center",1
+"474","United States","heraldonline",1,0.0988,"Right",1
+"475","United States","heraldpalladium",1,NA,"No Score",1
+"476","United States","heraldtribune",1,0.2612,"Right",1
+"477","United States","hillcountrynews",1,NA,"No Score",1
+"478","United States","hindustantimes",20,-0.1009,"Center",0
+"479","United States","hmbreview",3,NA,"No Score",1
+"480","United States","hollandsentinel",1,NA,"No Score",1
+"481","United States","hollywoodreporter",554,-0.2197,"Left",0
+"482","United States","hotair",4,0.8293,"Right",1
+"483","United States","hotsr",5,NA,"No Score",1
+"484","United States","houstonpress",5,-0.3442,"Left",0
+"485","United States","htrnews",6,NA,"No Score",1
+"486","United States","hudsonvalleyone",2,NA,"No Score",1
+"487","United States","huffingtonpost",18,-0.2414,"Left",0
+"488","United States","huffingtonpost",6,-0.2383,"Left",0
+"489","United States","huffpost",702,-0.3121,"Left",0
+"490","United States","ibj",1,0.1099,"Right",1
+"491","United States","ibtimes",1,-0.0578,"Center",0
+"492","United States","ibtimes",1,-0.119,"Center",0
+"493","United States","ibtimes",33,-0.201,"Left",0
+"494","United States","idahobusinessreview",1,0.4086,"Right",1
+"495","United States","idahopress",5,0.4522,"Right",1
+"496","United States","idahostatejournal",1,0.4792,"Right",1
+"497","United States","idahostatesman",25,0.221,"Right",1
+"498","United States","ijr",24,0.63,"Right",1
+"499","United States","indeonline",1,NA,"No Score",1
+"500","United States","independent",140,-0.3455,"Left",0
+"501","United States","indianagazette",1,0.1641,"Right",1
+"502","United States","indianexpress",2,-0.1564,"Center",0
+"503","United States","indiatimes",53,-0.0639,"Center",0
+"504","United States","indystar",15,-0.0714,"Center",0
+"505","United States","inforum",2,-0.1438,"Center",0
+"506","United States","infowars",35,0.7817,"Right",1
+"507","United States","inquisitr",16,0.0363,"Center",1
+"508","United States","insidenova",2,NA,"No Score",1
+"509","United States","insider",285,NA,"No Score",1
+"510","United States","inthesetimes",2,-0.7717,"Left",0
+"511","United States","investors",17,0.7217,"Right",1
+"512","United States","irishtimes",12,-0.3228,"Left",0
+"513","United States","itemlive",5,-0.2732,"Left",0
+"514","United States","jacksonville",17,0.3326,"Right",1
+"515","United States","jacobinmag",2,-0.803,"Left",0
+"516","United States","japantimes",4,-0.0909,"Center",0
+"517","United States","jewishjournal",1,-0.2029,"Left",0
+"518","United States","jezebel",140,-0.6633,"Left",0
+"519","United States","jonesborosun",21,NA,"No Score",1
+"520","United States","joplinglobe",1,0.3463,"Right",1
+"521","United States","journal-news",1,0.0948,"Right",1
+"522","United States","journal-news",69,0.3289,"Right",1
+"523","United States","journalism",2,-0.381,"Left",0
+"524","United States","journalnow",2,0.0747,"Center",1
+"525","United States","journalpatriot",1,NA,"No Score",1
+"526","United States","journalstar",38,0.4244,"Right",1
+"527","United States","jpost",25,0.2185,"Right",1
+"528","United States","jsonline",11,-0.0542,"Center",0
+"529","United States","justsecurity",1,-0.6648,"Left",0
+"530","United States","kansas",1,0.4304,"Right",1
+"531","United States","kansascity",9,0.1377,"Right",1
+"532","United States","kcchronicle",3,NA,"No Score",1
+"533","United States","kdhnews",1,NA,"No Score",1
+"534","United States","kearneyhub",14,0.5697,"Right",1
+"535","United States","kenoshanews",58,NA,"No Score",1
+"536","United States","kentucky",11,0.0917,"Right",1
+"537","United States","keysnews",4,NA,"No Score",1
+"538","United States","kitsapsun",1,0.1944,"Right",1
+"539","United States","knoxnews",46,0.1287,"Right",1
+"540","United States","lacrossetribune",14,0.1215,"Right",1
+"541","United States","lancasteronline",1,0.2046,"Right",1
+"542","United States","lansingstatejournal",4,0.0795,"Center",1
+"543","United States","lasvegassun",5,0.0727,"Center",1
+"544","United States","latimes",169,-0.261,"Left",0
+"545","United States","law",7,-0.1377,"Center",0
+"546","United States","laweekly",2,-0.4391,"Left",0
+"547","United States","lawfareblog",6,-0.6433,"Left",0
+"548","United States","lbpost",1,NA,"No Score",1
+"549","United States","lcsun-news",3,-0.0891,"Center",0
+"550","United States","ldnews",1,0.4414,"Right",1
+"551","United States","leaderherald",1,NA,"No Score",1
+"552","United States","leadertelegram",2,-0.2525,"Left",0
+"553","United States","ledger-enquirer",3,-0.199,"Center",0
+"554","United States","lehighvalleylive",742,0.1343,"Right",1
+"555","United States","lemonde",1,-0.5317,"Left",0
+"556","United States","lifezette",15,0.8501,"Right",1
+"557","United States","livejournal",410,NA,"No Score",1
+"558","United States","livemint",1,-0.1819,"Center",0
+"559","United States","livingstonparishnews",4,NA,"No Score",1
+"560","United States","lmtonline",3,NA,"No Score",1
+"561","United States","lockhaven",1,NA,"No Score",1
+"562","United States","lohud",6,-0.1004,"Center",0
+"563","United States","lowellsun",1,-0.0426,"Center",0
+"564","United States","lubbockonline",1,0.2126,"Right",1
+"565","United States","macombdaily",3,NA,"No Score",1
+"566","United States","mailtribune",2,-0.131,"Center",0
+"567","United States","mainlinemedianews",1,-0.0893,"Center",0
+"568","United States","mansfieldnewsjournal",1,NA,"No Score",1
+"569","United States","maqnews",1,NA,"No Score",1
+"570","United States","marinecorpstimes",1,0.409,"Right",1
+"571","United States","marketwatch",95,0.2847,"Right",1
+"572","United States","mashable",67,-0.1223,"Center",0
+"573","United States","masslive",14,-0.2665,"Left",0
+"574","United States","mcalesternews",2,NA,"No Score",1
+"575","United States","mcall",119,0.1789,"Right",1
+"576","United States","mcclatchydc",1,-0.1175,"Center",0
+"577","United States","mcdonoughvoice",30,NA,"No Score",1
+"578","United States","mdjonline",1,0.2428,"Right",1
+"579","United States","mediaite",42,0.1359,"Right",1
+"580","United States","mediamatters",2,-0.7221,"Left",0
+"581","United States","mediapost",1,-0.1582,"Center",0
+"582","United States","medios1",656,NA,"No Score",1
+"583","United States","mercedsunstar",1,NA,"No Score",1
+"584","United States","mercurynews",26,-0.1167,"Center",0
+"585","United States","meridianstar",2,NA,"No Score",1
+"586","United States","metafilter",11,-0.7785,"Left",0
+"587","United States","methowvalleynews",4,NA,"No Score",1
+"588","United States","metnews",1,NA,"No Score",1
+"589","United States","metro",2,-0.402,"Left",0
+"590","United States","metrotimes",9,-0.5513,"Left",0
+"591","United States","metrowestdailynews",2,-0.1544,"Center",0
+"592","United States","mi-reporter",1,NA,"No Score",1
+"593","United States","miamiherald",50,-0.0444,"Center",0
+"594","United States","miaminewtimes",3,-0.3212,"Left",0
+"595","United States","mic",27,-0.595,"Left",0
+"596","United States","michigandaily",1,-0.4827,"Left",0
+"597","United States","middletownpress",1,-0.0745,"Center",0
+"598","United States","middletowntranscript",1,NA,"No Score",1
+"599","United States","midweeknews",1,NA,"No Score",1
+"600","United States","militarytimes",10,0.2375,"Right",1
+"601","United States","mintpressnews",1,-0.1743,"Center",0
+"602","United States","mirror",286,0.1505,"Right",1
+"603","United States","missoulian",2,-0.3516,"Left",0
+"604","United States","mlive",36,-0.036,"Center",0
+"605","United States","monroenews",2,NA,"No Score",1
+"606","United States","montgomeryadvertiser",4,-0.1615,"Center",0
+"607","United States","montrealgazette",4,-0.222,"Left",0
+"608","United States","morningconsult",14,0.0071,"Center",1
+"609","United States","motherjones",404,-0.6966,"Left",0
+"610","United States","mrctv",7,0.8813,"Right",1
+"611","United States","msnbc",171,-0.6243,"Left",0
+"612","United States","mtdemocrat",1,NA,"No Score",1
+"613","United States","multichannel",4,0.0223,"Center",1
+"614","United States","mycentraljersey",10,0.0879,"Right",1
+"615","United States","mymalonetelegram",3,NA,"No Score",1
+"616","United States","myplainview",11,NA,"No Score",1
+"617","United States","myrtlebeachonline",16,0.2184,"Right",1
+"618","United States","mysanantonio",2,0.0318,"Center",1
+"619","United States","napavalleyregister",3,0.1744,"Right",1
+"620","United States","natchezdemocrat",1,NA,"No Score",1
+"621","United States","nationalgeographic",102,-0.3706,"Left",0
+"622","United States","nationalinterest",2,0.2148,"Right",1
+"623","United States","nationalpost",9,-0.1346,"Center",0
+"624","United States","nationalreview",40,0.6361,"Right",1
+"625","United States","navytimes",3,0.3479,"Right",1
+"626","United States","nbcnews",454,-0.1558,"Center",0
+"627","United States","ncnewsonline",2,0.0974,"Right",1
+"628","United States","newarkadvocate",3,0.1525,"Right",1
+"629","United States","newindianexpress",2,-0.0819,"Center",0
+"630","United States","newportnewstimes",1,NA,"No Score",1
+"631","United States","newportplaintalk",5,NA,"No Score",1
+"632","United States","newrepublic",17,-0.641,"Left",0
+"633","United States","news-journal",2,NA,"No Score",1
+"634","United States","news-journalonline",1,0.3095,"Right",1
+"635","United States","news-leader",7,0.1312,"Right",1
+"636","United States","news-press",1,0.3702,"Right",1
+"637","United States","news",30,0.0545,"Center",1
+"638","United States","news",1951,-0.1244,"Center",0
+"639","United States","newsbusters",4,0.8702,"Right",1
+"640","United States","newsday",10,-0.0843,"Center",0
+"641","United States","newseum",1,NA,"No Score",1
+"642","United States","newsleader",2,-0.0708,"Center",0
+"643","United States","newsmax",307,0.6879,"Right",1
+"644","United States","newsminer",1,-0.1174,"Center",0
+"645","United States","newsobserver",11,-0.1549,"Center",0
+"646","United States","newsone",13,-0.7838,"Left",0
+"647","United States","newspapers",447,NA,"No Score",1
+"648","United States","newstimes",2,-0.0205,"Center",0
+"649","United States","newstribune",1,NA,"No Score",1
+"650","United States","newsweek",200,-0.4096,"Left",0
+"651","United States","newyorker",55,-0.5624,"Left",0
+"652","United States","niemanlab",2,-0.6013,"Left",0
+"653","United States","nj",148,-0.1036,"Center",0
+"654","United States","njtoday",1,-0.1107,"Center",0
+"655","United States","nola",13,0.063,"Center",1
+"656","United States","northbaybusinessjournal",1,NA,"No Score",1
+"657","United States","northfulton",1,NA,"No Score",1
+"658","United States","northjersey",23,-0.0732,"Center",0
+"659","United States","northwestgeorgianews",11,NA,"No Score",1
+"660","United States","northwestsignal",2,NA,"No Score",1
+"661","United States","nowthisnews",2,0.1546,"Right",1
+"662","United States","npr",361,-0.4161,"Left",0
+"663","United States","nvdaily",3,NA,"No Score",1
+"664","United States","nwaonline",1,-0.0476,"Center",0
+"665","United States","nwfdailynews",1,0.5121,"Right",1
+"666","United States","nwherald",1,0.1991,"Right",1
+"667","United States","nwitimes",9,0.0492,"Center",1
+"668","United States","nydailynews",93,-0.254,"Left",0
+"669","United States","nymag",75,-0.5637,"Left",0
+"670","United States","nypost",287,0.1813,"Right",1
+"671","United States","nyse",2,-0.1163,"Center",0
+"672","United States","nytimes",2198,-0.2602,"Left",0
+"673","United States","oann",10,0.8644,"Right",1
+"674","United States","oanow",1,0.2322,"Right",1
+"675","United States","observer",31,-0.1827,"Center",0
+"676","United States","ocala",10,0.248,"Right",1
+"677","United States","ocregister",14,0.2067,"Right",1
+"678","United States","ohio",1,-0.0189,"Center",0
+"679","United States","omaha",100,0.4046,"Right",1
+"680","United States","oneidadispatch",5,-0.2601,"Left",0
+"681","United States","onlineathens",1,0.1399,"Right",1
+"682","United States","onwardstate",3,0.265,"Right",1
+"683","United States","opendemocracy",2,-0.6732,"Left",0
+"684","United States","oregonlive",365,-0.2834,"Left",0
+"685","United States","orlandosentinel",30,0.1924,"Right",1
+"686","United States","orlandoweekly",6,-0.295,"Left",0
+"687","United States","ottumwacourier",1,NA,"No Score",1
+"688","United States","outbrain",44,0.0206,"Center",1
+"689","United States","overtoncountynews",1,NA,"No Score",1
+"690","United States","oxfordeagle",1,NA,"No Score",1
+"691","United States","ozy",12,-0.3969,"Left",0
+"692","United States","palmbeachpost",9,0.0766,"Center",1
+"693","United States","palmerreport",6,-0.7334,"Left",0
+"694","United States","parade",69,0.1143,"Right",1
+"695","United States","parkcitiespeople",1,NA,"No Score",1
+"696","United States","patch",474,0.0187,"Center",1
+"697","United States","pbs",186,-0.4077,"Left",0
+"698","United States","pe",14,0.0317,"Center",1
+"699","United States","pennlive",156,0.1539,"Right",1
+"700","United States","people-press",6,-0.3363,"Left",0
+"701","United States","petoskeynews",40,NA,"No Score",1
+"702","United States","pewresearch",22,-0.3082,"Left",0
+"703","United States","philadelphiaweekly",1,-0.5648,"Left",0
+"704","United States","philly",12,-0.1823,"Center",0
+"705","United States","phoenixnewtimes",5,-0.4061,"Left",0
+"706","United States","phys",14,-0.2064,"Left",0
+"707","United States","pikecountygeorgia",3,NA,"No Score",1
+"708","United States","pilotonline",4,-0.0529,"Center",0
+"709","United States","pjmedia",11,0.8157,"Right",1
+"710","United States","pjstar",6,0.045,"Center",1
+"711","United States","politico",310,-0.1914,"Center",0
+"712","United States","politicususa",22,-0.7081,"Left",0
+"713","United States","politifact",55,-0.4209,"Left",0
+"714","United States","poll",24,-0.7373,"Left",0
+"715","United States","portlandmercury",3,-0.8211,"Left",0
+"716","United States","post-gazette",18,-0.0408,"Center",0
+"717","United States","postandcourier",1,-0.2406,"Left",0
+"718","United States","postcrescent",1,-0.013,"Center",0
+"719","United States","postregister",1,NA,"No Score",1
+"720","United States","poststar",1,0.2347,"Right",1
+"721","United States","powelltribune",1,NA,"No Score",1
+"722","United States","poynter",1,-0.5139,"Left",0
+"723","United States","pratttribune",2,NA,"No Score",1
+"724","United States","pressconnects",13,-0.0097,"Center",0
+"725","United States","pressdemocrat",13,-0.1405,"Center",0
+"726","United States","pressherald",2,-0.4097,"Left",0
+"727","United States","pressofatlanticcity",49,0.108,"Right",1
+"728","United States","presstelegram",1,-0.2562,"Left",0
+"729","United States","prnewswire",21,0.0483,"Center",1
+"730","United States","progressive",1,-0.8814,"Left",0
+"731","United States","projectveritas",7,0.8903,"Right",1
+"732","United States","propublica",17,-0.6551,"Left",0
+"733","United States","prospect",3,-0.7318,"Left",0
+"734","United States","providencejournal",1,-0.3751,"Left",0
+"735","United States","prweb",1,0.1293,"Right",1
+"736","United States","psmag",2,-0.5787,"Left",0
+"737","United States","publicintegrity",3,-0.3638,"Left",0
+"738","United States","punxsutawneyspirit",6,NA,"No Score",1
+"739","United States","qctimes",16,0.2881,"Right",1
+"740","United States","qz",30,-0.3721,"Left",0
+"741","United States","rapidcityjournal",3,0.2475,"Right",1
+"742","United States","rappler",3,-0.2073,"Left",0
+"743","United States","rare",10,0.5831,"Right",1
+"744","United States","rasmussenreports",24,0.7963,"Right",1
+"745","United States","rawstory",199,-0.6161,"Left",0
+"746","United States","rd",131,0.1398,"Right",1
+"747","United States","readingeagle",13,0.1776,"Right",1
+"748","United States","realclearpolitics",44,0.568,"Right",1
+"749","United States","reason",119,0.3846,"Right",1
+"750","United States","record-eagle",14,NA,"No Score",1
+"751","United States","recordonline",5,-0.0162,"Center",0
+"752","United States","redstate",13,0.7672,"Right",1
+"753","United States","reformer",1,NA,"No Score",1
+"754","United States","registerguard",2,-0.1947,"Center",0
+"755","United States","repubblica",4,-0.0197,"Center",0
+"756","United States","republicanherald",1,0.2475,"Right",1
+"757","United States","reuters",224,-0.1287,"Center",0
+"758","United States","revealnews",1,-0.6576,"Left",0
+"759","United States","reviewjournal",26,0.1918,"Right",1
+"760","United States","rgj",2,0.1664,"Right",1
+"761","United States","richmond",10,0.0133,"Center",1
+"762","United States","rightwingwatch",4,-0.6068,"Left",0
+"763","United States","riverfronttimes",4,-0.4402,"Left",0
+"764","United States","riverreporter",1,NA,"No Score",1
+"765","United States","rivertowns",1,NA,"No Score",1
+"766","United States","roanoke",8,-0.0978,"Center",0
+"767","United States","rockymounttelegram",1,NA,"No Score",1
+"768","United States","rollcall",18,-0.1641,"Center",0
+"769","United States","roughlyexplained",146,NA,"No Score",1
+"770","United States","rrstar",1,NA,"No Score",1
+"771","United States","rsf",3,-0.5034,"Left",0
+"772","United States","rt",230,0.1466,"Right",1
+"773","United States","sacbee",22,-0.1316,"Center",0
+"774","United States","salemleader",2,NA,"No Score",1
+"775","United States","salemnews",3,-0.2097,"Left",0
+"776","United States","salon",170,-0.5926,"Left",0
+"777","United States","sandiegoreader",5,0.0358,"Center",1
+"778","United States","sandiegouniontribune",84,-0.0839,"Center",0
+"779","United States","saratogatodaynewspaper",1,NA,"No Score",1
+"780","United States","saratogian",2,0.198,"Right",1
+"781","United States","saukvalley",1,NA,"No Score",1
+"782","United States","sbsun",1,0.1353,"Right",1
+"783","United States","scientificamerican",26,-0.4039,"Left",0
+"784","United States","scmp",17,-0.1861,"Center",0
+"785","United States","seacoastonline",2,-0.0714,"Center",0
+"786","United States","seattlepi",73,-0.1598,"Center",0
+"787","United States","seattletimes",456,-0.2764,"Left",0
+"788","United States","sent-trib",4,NA,"No Score",1
+"789","United States","sentinel-standard",1,NA,"No Score",1
+"790","United States","sfchronicle",25,-0.4104,"Left",0
+"791","United States","sfexaminer",5,-0.277,"Left",0
+"792","United States","sfgate",189,-0.1764,"Center",0
+"793","United States","sfweekly",1,-0.5057,"Left",0
+"794","United States","shareblue",2,-0.7856,"Left",0
+"795","United States","shelbycountyreporter",1,NA,"No Score",1
+"796","United States","shreveporttimes",1,0.3265,"Right",1
+"797","United States","silive",3,-0.1686,"Center",0
+"798","United States","sina",3,NA,"No Score",1
+"799","United States","siouxcityjournal",16,0.5127,"Right",1
+"800","United States","sj-r",1,-0.2453,"Left",0
+"801","United States","slate",126,-0.5108,"Left",0
+"802","United States","sltrib",11,0.1265,"Right",1
+"803","United States","smartbrief",15,0.0743,"Center",1
+"804","United States","smdp",1,NA,"No Score",1
+"805","United States","smh",9,-0.1802,"Center",0
+"806","United States","snopes",202,-0.165,"Center",0
+"807","United States","somerset-kentucky",6,NA,"No Score",1
+"808","United States","sooeveningnews",1,NA,"No Score",1
+"809","United States","sourcewatch",3,-0.8738,"Left",0
+"810","United States","southbendtribune",1,0.1353,"Right",1
+"811","United States","southcoasttoday",1,-0.3375,"Left",0
+"812","United States","spectator",522,0.8369,"Right",1
+"813","United States","spiegel",3,-0.4226,"Left",0
+"814","United States","spiked-online",3,0.3727,"Right",1
+"815","United States","spiritofjefferson",13,NA,"No Score",1
+"816","United States","splcenter",16,-0.6753,"Left",0
+"817","United States","splinternews",30,-0.8336,"Left",0
+"818","United States","spokesman",8,0.0198,"Center",1
+"819","United States","springfieldnewssun",1,NA,"No Score",1
+"820","United States","sputniknews",12,0.3021,"Right",1
+"821","United States","stamfordadvocate",10,-0.0176,"Center",0
+"822","United States","stanforddaily",1,-0.2425,"Left",0
+"823","United States","star-telegram",92,0.2801,"Right",1
+"824","United States","staradvertiser",2,0.0743,"Center",1
+"825","United States","startribune",21,-0.1326,"Center",0
+"826","United States","statesman",1,-0.0242,"Center",0
+"827","United States","statesmanjournal",1,-0.0928,"Center",0
+"828","United States","stltoday",24,-0.0203,"Center",0
+"829","United States","stormlakepilottribune",1,NA,"No Score",1
+"830","United States","straight",2,-0.5679,"Left",0
+"831","United States","stream",1,0.8676,"Right",1
+"832","United States","stripes",6,0.3034,"Right",1
+"833","United States","stupiddope",1581,-0.4595,"Left",0
+"834","United States","stwnewspress",2,0.4391,"Right",1
+"835","United States","styleweekly",1,-0.4746,"Left",0
+"836","United States","sun-sentinel",47,0.1319,"Right",1
+"837","United States","sunjournal",1,-0.0492,"Center",0
+"838","United States","sunnyskyz",1,0.0206,"Center",1
+"839","United States","suntimes",19,-0.0091,"Center",0
+"840","United States","swtimes",8,NA,"No Score",1
+"841","United States","syracuse",39,0.0103,"Center",1
+"842","United States","tahlequahdailypress",1,0.1322,"Right",1
+"843","United States","talkingpointsmemo",11,-0.6732,"Left",0
+"844","United States","tallahassee",2,0.179,"Right",1
+"845","United States","tampabay",17,0.0938,"Right",1
+"846","United States","taosnews",1,-0.1751,"Center",0
+"847","United States","taskandpurpose",5,-0.0358,"Center",0
+"848","United States","tcpalm",1,0.3656,"Right",1
+"849","United States","telegram",4,-0.0927,"Center",0
+"850","United States","telegraph",95,-0.0634,"Center",0
+"851","United States","telemundo",1139,-0.1834,"Center",0
+"852","United States","tennessean",10,0.1288,"Right",1
+"853","United States","texastribune",12,-0.332,"Left",0
+"854","United States","the-daily-record",1,NA,"No Score",1
+"855","United States","theadvertiser",6,0.3796,"Right",1
+"856","United States","theadvocate",10,0.159,"Right",1
+"857","United States","theamericanconservative",4,0.2098,"Right",1
+"858","United States","theatlantic",193,-0.4148,"Left",0
+"859","United States","theaustralian",3,-0.0369,"Center",0
+"860","United States","theblaze",582,0.7889,"Right",1
+"861","United States","thebraziltimes",2,NA,"No Score",1
+"862","United States","thecabin",17,NA,"No Score",1
+"863","United States","theconversation",21,-0.4203,"Left",0
+"864","United States","thecourierexpress",2,NA,"No Score",1
+"865","United States","thecrimson",2,-0.4793,"Left",0
+"866","United States","thedailybeast",2317,-0.3825,"Left",0
+"867","United States","thedailyrecord",2,-0.2061,"Left",0
+"868","United States","thedailystar",1,0.0134,"Center",1
+"869","United States","theday",1,-0.0263,"Center",0
+"870","United States","thedestinlog",1,NA,"No Score",1
+"871","United States","thedrum",2,-0.2465,"Left",0
+"872","United States","theeagle",1,-0.0928,"Center",0
+"873","United States","theepochtimes",29,0.0084,"Center",1
+"874","United States","thefederalist",23,0.7078,"Right",1
+"875","United States","theglobeandmail",9,-0.2402,"Left",0
+"876","United States","theguardian",767,-0.3893,"Left",0
+"877","United States","thehawkeye",2,NA,"No Score",1
+"878","United States","thehill",406,-0.06,"Center",0
+"879","United States","thehindu",9,-0.334,"Left",0
+"880","United States","thehour",10,-0.0381,"Center",0
+"881","United States","theindependent",11,0.5022,"Right",1
+"882","United States","theintell",1,0.0599,"Center",1
+"883","United States","theintelligencer",1,0.2689,"Right",1
+"884","United States","theintercept",13,-0.5133,"Left",0
+"885","United States","theitem",1,NA,"No Score",1
+"886","United States","theledger",1,0.3499,"Right",1
+"887","United States","themarshallproject",2,-0.7337,"Left",0
+"888","United States","themonitor",1,0.1228,"Right",1
+"889","United States","thenation",447,-0.7298,"Left",0
+"890","United States","thenational",7,-0.2521,"Left",0
+"891","United States","thenewsjournal",1,NA,"No Score",1
+"892","United States","thenewstribune",6,-0.0753,"Center",0
+"893","United States","theoaklandpress",7,0.045,"Center",1
+"894","United States","theolympian",1,-0.1516,"Center",0
+"895","United States","theonion",83,-0.2903,"Left",0
+"896","United States","thepoliticalinsider",9,0.8515,"Right",1
+"897","United States","theprogressnews",1,NA,"No Score",1
+"898","United States","theresurgent",3,0.7598,"Right",1
+"899","United States","theroot",290,-0.7344,"Left",0
+"900","United States","thescottishsun",3,-0.0443,"Center",0
+"901","United States","thesouthern",21,0.0015,"Center",1
+"902","United States","thespectrum",2,0.4745,"Right",1
+"903","United States","thestar",4,-0.3687,"Left",0
+"904","United States","thestranger",11,-0.7594,"Left",0
+"905","United States","thestreet",12,0.1554,"Right",1
+"906","United States","thesun",134,0.3268,"Right",1
+"907","United States","thetelegraph",1,NA,"No Score",1
+"908","United States","thetimes-tribune",1,-0.0402,"Center",0
+"909","United States","thetimes",5,-0.1205,"Center",0
+"910","United States","thetimestribune",2,NA,"No Score",1
+"911","United States","theunion",1,NA,"No Score",1
+"912","United States","theweek",76,-0.1771,"Center",0
+"913","United States","thinkprogress",4,-0.7193,"Left",0
+"914","United States","thisweeknews",2,NA,"No Score",1
+"915","United States","time",384,-0.2046,"Left",0
+"916","United States","times-news",4,-0.02,"Center",0
+"917","United States","timesargus",1,NA,"No Score",1
+"918","United States","timesfreepress",2,-0.0026,"Center",0
+"919","United States","timesgazette",4,NA,"No Score",1
+"920","United States","timesunion",19,-0.1695,"Center",0
+"921","United States","titusvilleherald",1,NA,"No Score",1
+"922","United States","toledoblade",5,-0.0608,"Center",0
+"923","United States","topix",476,0.0841,"Right",1
+"924","United States","townhall",50,0.8498,"Right",1
+"925","United States","trentonian",1,-0.0263,"Center",0
+"926","United States","trib",176,0.3628,"Right",1
+"927","United States","tribdem",24,0.1224,"Right",1
+"928","United States","triblive",9,0.1962,"Right",1
+"929","United States","truthdig",2,-0.6402,"Left",0
+"930","United States","tucson",9,-0.0604,"Center",0
+"931","United States","tulsaworld",2,0.3603,"Right",1
+"932","United States","twincities",9,0.0619,"Center",1
+"933","United States","twistity",2830,NA,"No Score",1
+"934","United States","twitchy",1,0.8755,"Right",1
+"935","United States","tylerpaper",2,NA,"No Score",1
+"936","United States","unionleader",188,0.3961,"Right",1
+"937","United States","unionrecorder",1,NA,"No Score",1
+"938","United States","universalhub",12,-0.6899,"Left",0
+"939","United States","univision",10,-0.4249,"Left",0
+"940","United States","upi",35,0.0385,"Center",1
+"941","United States","usatoday",870,0.0582,"Center",1
+"942","United States","usnews",197,-0.1304,"Center",0
+"943","United States","uticaod",5,0.2141,"Right",1
+"944","United States","vaildaily",1,0.1017,"Right",1
+"945","United States","vanityfair",92,-0.4891,"Left",0
+"946","United States","variety",873,-0.2409,"Left",0
+"947","United States","vcstar",1,-0.0749,"Center",0
+"948","United States","vice",187,-0.5531,"Left",0
+"949","United States","villagesoup",1,NA,"No Score",1
+"950","United States","vnews",2,-0.3858,"Left",0
+"951","United States","voanews",3,-0.2529,"Left",0
+"952","United States","vox",128,-0.5546,"Left",0
+"953","United States","vulture",435,-0.5491,"Left",0
+"954","United States","wacotrib",1,0.0503,"Center",1
+"955","United States","wahpetondailynews",2,NA,"No Score",1
+"956","United States","washingtoncitypaper",1,-0.6925,"Left",0
+"957","United States","washingtonexaminer",86,0.5399,"Right",1
+"958","United States","washingtonpost",5317,-0.2342,"Left",0
+"959","United States","washingtontimes",48,0.6297,"Right",1
+"960","United States","wataugademocrat",1,NA,"No Score",1
+"961","United States","wcpo",4,0.1679,"Right",1
+"962","United States","wellsvilledaily",1,NA,"No Score",1
+"963","United States","westernjournal",188,0.8821,"Right",1
+"964","United States","westmilfordmessenger",2,NA,"No Score",1
+"965","United States","westword",3,-0.3379,"Left",0
+"966","United States","whittierdailynews",1,NA,"No Score",1
+"967","United States","wickedlocal",7,-0.2532,"Left",0
+"968","United States","winchesterstar",2,NA,"No Score",1
+"969","United States","wired",173,-0.2354,"Left",0
+"970","United States","wiscnews",14,NA,"No Score",1
+"971","United States","wisedime",1233,NA,"No Score",1
+"972","United States","wn",6,0.0313,"Center",1
+"973","United States","wnd",358,0.8699,"Right",1
+"974","United States","wschronicle",1,NA,"No Score",1
+"975","United States","wsj",220,0.0106,"Center",1
+"976","United States","wsws",4,-0.1834,"Center",0
+"977","United States","wtop",72,-0.0792,"Center",0
+"978","United States","wvgazettemail",1,-0.2868,"Left",0
+"979","United States","wweek",10,-0.6215,"Left",0
+"980","United States","yahoo",21714,0.0848,"Right",1
+"981","United States","yakimaherald",44,-0.139,"Center",0
+"982","United States","yaledailynews",2,-0.5554,"Left",0
+"983","United States","ydr",8,0.2475,"Right",1
+"984","United States","yesweekly",1,NA,"No Score",1
+"985","United States","ynetnews",13,0.2455,"Right",1
+"986","United States","yourstephenvilletx",1,NA,"No Score",1

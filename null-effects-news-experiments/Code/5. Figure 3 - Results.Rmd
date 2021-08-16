@@ -1,0 +1,561 @@
+---
+title: "5. Figure 3 - Results"
+---
+
+Data:
+```{r}
+source('helpers.R')
+
+vars = c("know_r", "know_fac_r", "ptc_r", "att_str_r", "att_imp_r",
+         "ft_r", "under_r", "stupid_r", "malvol_r", "comp_r", "perpol_r", 
+         "well_feel_r", "well_act_r", "news", "news_like", "news_self", 
+         "news_like_self", "wave", "condition", "person_id")
+  
+df = read.csv(paste0(datadir, "us_survey_long.csv")) %>% 
+  select(., vars) %>%
+  mutate(country = "United States") %>% 
+  bind_rows(
+    list(., read.csv(paste0(datadir, "pl_survey_long.csv")) %>%
+            select(., vars) %>%
+            mutate(country = "Poland"))) %>%
+  filter(condition != "")
+```
+
+Create list of self-reported compliers
+```{r}
+# UNITED STATES
+us_ids_exp = data.frame(
+    person_id = subset(df, country == "United States" & 
+                       condition == "No News - Experiment")$person_id)
+
+us_comp_self = read.csv(paste0(datadir, "us_survey_compliance_wide.csv")) %>%
+  mutate(ppl_check1 = case_when(
+    ppl_check1 == 1 ~ 0, ppl_check1 %in% 2:4 ~ 1)) %>% 
+  mutate(ppl_check2 = case_when(
+    ppl_check2 == 1 ~ 0, ppl_check2 %in% 2:4 ~ 1)) %>% 
+  mutate(ppl_check3 = case_when(
+    ppl_check3 == 1 ~ 0, ppl_check3 %in% 2:4 ~ 1)) %>% 
+  mutate(ppl_check4 = case_when(
+    ppl_check4 == 1 ~ 0, ppl_check4 %in% 2:4 ~ 1)) %>% 
+  mutate(ppl_check5 = case_when(
+    ppl_check5 == 1 ~ 0, ppl_check5 %in% 2:4 ~ 1)) %>% 
+  mutate(comp = 
+           rowSums(select(., paste0("ppl_check", 1:5)), na.rm = T)) %>%
+  filter(comp > 0) %>%
+  select(., "person_id")
+
+# POLAND
+pl_ids_exp = data.frame(
+    person_id = subset(df, country == "Poland" & 
+                       condition == "More News - Experiment")$person_id)
+
+for (i in 1:6){
+  
+  check = read_sav(paste0(datadir, "pl_survey_check", i, ".sav")) %>%
+    left_join(., read.csv(paste0(datadir, "person_ids.csv")), 
+              by = "respondent_id") %>%
+    subset(., person_id %in% pl_ids_exp$person_id) %>% 
+    setNames(., gsub(paste0("y1eksp", i), "comp", names(.))) %>%
+    data.frame() %>% 
+    as_tibble() %>% 
+    mutate(comp = car::recode(comp, "1 = 1; 2 = 0")) %>% 
+    select(., c("person_id", "comp")) %>%
+    setNames(c("person_id", paste0("comp_c", i))) 
+  
+  pl_ids_exp = left_join(pl_ids_exp, check, by = "person_id")
+  
+}
+
+pl_comp_self = pl_ids_exp %>%
+  mutate(comp = rowSums(select(., paste0("comp_c", 1:6)), na.rm = T)) %>%
+  filter(comp > 0) %>%
+  select(., "person_id")
+```
+
+Create list of behavioral compliers
+```{r}
+# person-day dyads
+us_comp_web = read.csv(paste0(datadir, "us_survey_pre.csv")) %>% 
+  filter(person_id %in% us_ids_exp$person_id) %>% 
+  mutate(date_start = as.Date(
+    str_split_fixed(gsub('"|\\\\', "", StartDate_w3), " ", 2)[,1],
+    format = "%Y-%m-%d")) %>% 
+  mutate(date_before = date_start - 6) %>% 
+  mutate(date_after = date_start + 6) %>% 
+  select(., c("person_id", "date_start", "date_before", "date_after"))
+
+visits_sum_us = list()
+
+for (i in 1:nrow(us_comp_web)){
+  dat = data.frame(
+    date = seq(us_comp_web$date_before[i], us_comp_web$date_after[i], 1))
+  
+  dat$person_id = us_comp_web$person_id[i]
+  dat$date_start = us_comp_web$date_start[i]
+  dat$date_before = us_comp_web$date_before[i] 
+  dat$date_after = us_comp_web$date_after[i]
+  
+  visits_sum_us[[i]] = dat
+}
+
+visits_sum_us = do.call(rbind, visits_sum_us)
+visits_sum_us$date = as.character(visits_sum_us$date)
+
+visits_sum_us = visits_sum_us %>% 
+  left_join(
+    aggregate(id ~ person_id + created_local_date, 
+              data = read.csv(paste0(datadir, "us_trace_visits.csv")) %>%
+                filter(person_id %in% us_ids_exp$person_id), 
+              FUN = length) %>% 
+    setNames(., c("person_id", "date", "newscount")), 
+    by = c("person_id", "date")
+  ) 
+
+visits_sum_us$newscount[is.na(visits_sum_us$newscount)] = 0
+  
+visits_sum_us$date = as.Date(visits_sum_us$date, format = "%Y-%m-%d")
+
+# subset respondents who submitted min 7 days of browsing data 
+act_us = read.csv(paste0(datadir, "us_trace_activedays.csv"))
+
+act_us = left_join(act_us, select(us_comp_web, c("person_id", "date_start")),
+                   by = "person_id")
+act_us$nn_start = act_us$date_start - 6
+act_us$nn_end = act_us$date_start + 6
+
+act_us$created_local_date = as.Date(act_us$created_local_date, 
+                                    format = "%Y-%m-%d")
+
+act_us = act_us[act_us$created_local_date >= act_us$nn_start & 
+                act_us$created_local_date <= act_us$nn_end & 
+                !is.na(act_us$date_start),]
+
+act_us$time_nn[
+  act_us$created_local_date < act_us$date_start] = "pre" 
+
+act_us$time_nn[
+  act_us$created_local_date > act_us$date_start] = "post" 
+
+act_ids_us = as.character(subset(data.frame(table(
+  act_us %>% 
+  aggregate(created_local_date ~ person_id + time_nn, data = ., FUN = length) %>%
+  subset(., created_local_date > 5) %>%
+  select(., "person_id"))), Freq == 2)$Var1)
+
+# calculate total 
+us_comp_web = visits_sum_us[visits_sum_us$person_id %in% act_ids_us,]
+
+us_comp_web$time_nn[
+  us_comp_web$date < us_comp_web$date_start] = "pre" 
+
+us_comp_web$time_nn[
+  us_comp_web$date > us_comp_web$date_start] = "post" 
+
+us_comp_web = 
+  us_comp_web %>% 
+  aggregate(newscount ~ person_id + time_nn, FUN = sum, data = .) %>% 
+  mutate(time_nn = as.factor(time_nn)) %>% 
+  panel_data(., id = "person_id", wave = "time_nn") %>% 
+  widen_panel(., separator = "_") %>% 
+  mutate(diff = newscount_post - newscount_pre) %>%
+  mutate(diff = case_when(diff >= 0 ~ "Increase", diff < 0 ~ "Decrease")) %>% 
+  filter(diff == "Decrease") %>%
+  select(., "person_id")
+```
+
+```{r}
+# person-day dyads
+pl_comp_web = read_sav(paste0(datadir, "pl_survey_pre.sav")) %>% 
+  left_join(., read.csv(paste0(datadir, "person_ids.csv")), 
+            by = "respondent_id") %>% 
+  filter(person_id %in% pl_ids_exp$person_id) %>% 
+  mutate(date_start = as.Date(
+    strapplyc(survey_start_time, "\\d+-\\d+-\\d+", simplify = TRUE),
+    format = "%Y-%m-%d")) %>% 
+  mutate(date_before = date_start - 6) %>% 
+  mutate(date_after = date_start + 6) %>% 
+  select(., c("person_id", "date_start", "date_before", "date_after"))
+
+visits_sum_pl = list()
+
+for (i in 1:nrow(pl_comp_web)){
+  dat = data.frame(
+    date = seq(pl_comp_web$date_before[i], pl_comp_web$date_after[i], 1))
+  
+  dat$person_id = pl_comp_web$person_id[i]
+  dat$date_start = pl_comp_web$date_start[i]
+  dat$date_before = pl_comp_web$date_before[i] 
+  dat$date_after = pl_comp_web$date_after[i]
+  
+  visits_sum_pl[[i]] = dat
+}
+
+visits_sum_pl = do.call(rbind, visits_sum_pl)
+visits_sum_pl$date = as.character(visits_sum_pl$date)
+
+visits_sum_pl = visits_sum_pl %>% 
+  left_join(
+    aggregate(id ~ person_id + created_local_date, 
+              data = read.csv(paste0(datadir, "pl_trace_visits.csv")) %>%
+                filter(person_id %in% pl_ids_exp$person_id), 
+              FUN = length) %>% 
+    setNames(., c("person_id", "date", "newscount")), 
+    by = c("person_id", "date")
+  ) 
+
+visits_sum_pl$newscount[is.na(visits_sum_pl$newscount)] = 0
+  
+visits_sum_pl$date = as.Date(visits_sum_pl$date, format = "%Y-%m-%d")
+
+# subset respondents who submitted min 7 days of browsing data 
+act_pl = read.csv(paste0(datadir, "pl_trace_activedays.csv")) %>%
+  left_join(., select(pl_comp_web, c("person_id", "date_start")),
+            by = "person_id")
+act_pl$mn_start = act_pl$date_start - 14
+act_pl$mn_end = act_pl$date_start + 14
+
+act_pl$created_local_date = as.Date(act_pl$created_local_date, 
+                                    format = "%Y-%m-%d")
+
+act_pl = act_pl[act_pl$created_local_date >= act_pl$mn_start & 
+                act_pl$created_local_date <= act_pl$mn_end & 
+                !is.na(act_pl$date_start),]
+
+act_pl$time_mn[
+  act_pl$created_local_date < act_pl$date_start] = "pre" 
+
+act_pl$time_mn[
+  act_pl$created_local_date > act_pl$date_start] = "post" 
+
+act_ids_pl = as.character(subset(data.frame(table(act_pl %>% 
+  aggregate(created_local_date ~ person_id + time_mn, data = ., FUN = length) %>%
+  subset(., created_local_date > 7) %>%
+  select(., "person_id"))), Freq == 2)$Var1)
+
+# create list of behavioral compliers
+pl_comp_web = visits_sum_pl[visits_sum_pl$person_id %in% act_ids_pl,]
+
+pl_comp_web$time_mn[
+  pl_comp_web$date < pl_comp_web$date_start] = "pre" 
+
+pl_comp_web$time_mn[
+  pl_comp_web$date > pl_comp_web$date_start] = "post" 
+
+pl_comp_web = 
+  pl_comp_web %>% 
+  aggregate(newscount ~ person_id + time_mn, FUN = sum, data = .) %>% 
+  mutate(time_mn = as.factor(time_mn)) %>% 
+  panel_data(., id = "person_id", wave = "time_mn") %>% 
+  widen_panel(., separator = "_") %>% 
+  mutate(diff = newscount_post - newscount_pre) %>%
+  mutate(diff = case_when(diff <= 0 ~ "Decrease", diff > 0 ~ "Increase")) %>%
+  filter(diff == "Increase") %>%
+  select(., "person_id") %>%
+  mutate(person_id = as.numeric(as.character(person_id)))
+```
+
+```{r}
+df$comp_self = 0
+df$comp_self[df$person_id %in% 
+             c(us_comp_self$person_id, pl_comp_self$person_id)] = 1
+df$comp_self[df$condition == "More News - Control" |
+             df$condition == "No News - Control"] = 1
+
+df$comp_web = 0
+df$comp_web[df$person_id %in% 
+             c(us_comp_web$person_id, pl_comp_web$person_id)] = 1
+df$comp_web[df$condition == "More News - Control" |
+            df$condition == "No News - Control"] = 1
+```
+
+```{r}
+models = list()
+
+for (var in vars[1:13]){
+  
+  print(var)
+  for (cntry in c("Poland", "United States")){
+  
+    for (i in 1:3){
+      
+      dat = list(
+        dat1 = subset(df, country == cntry),
+        dat2 = subset(df, country == cntry & comp_self == 1),
+        dat3 = subset(df, country == cntry & comp_web == 1)
+      )[[i]]
+      
+      datname = c("All", "Self-Reported Compliers", "Online Compliers")[i]
+      
+    if (grepl("know|ptc|well", var) == T){
+        dat_new = subset(dat, wave == 2) 
+        dv = var; iv = ""
+      } else {
+        dat_new = dat %>%
+          panel_data(dat, id = "person_id", wave = wave) %>%
+          widen_panel(., separator = "_w") 
+        dv = paste0(var, "_w2");  iv = paste0(" +", var, "_w1")
+    }
+      
+    for (j in 1:5){
+    
+      eq = c(
+      paste0(dv, " ~ condition", iv), 
+      paste0(dv, " ~ condition + news_self + news_self*condition", iv), 
+      paste0(dv, " ~ condition + news + news*condition", iv),
+      paste0(dv, " ~ condition + news_like_self + news_like_self*condition", iv),
+      paste0(dv, " ~ condition + news_like + news_like*condition", iv)
+      )[j] 
+      
+      modelname = c("Treatment Effects", 
+                    "Prior News Exposure (Self-Report)", 
+                    "Prior News Exposure (Behavioral)", 
+                    "Prior Like-Minded News Exposure (Self-Report)", 
+                    "Prior Like-Minded News Exposure (Behavioral)")[j]
+      
+      if ("condition_w1" %in% names(dat_new)){
+        dat_new = dat_new %>%
+          rename(condition = condition_w1)
+      }
+      
+      models[[length(models) + 1]] = lm(as.formula(eq), data = dat_new) %>%
+        model_to_table() %>%
+        mutate(model = paste0("Model ", j ,letters[i])) %>% 
+        mutate(modelname = modelname) %>% 
+        mutate(data = datname) %>% 
+        mutate(country = cntry) %>%
+        mutate(var = var)
+        
+      }}}
+}
+
+models = do.call(rbind, models)
+
+write_xlsx(models, paste0(figdir, "Figure 3 - Data.xlsx"))
+```
+
+```{r}
+fig_dat = models[grepl("condition|news", models$coeff),] %>%
+  mutate(
+    coeff = recode(coeff, 
+    "news" =  "Exposure", 
+    "news_self" = "Exposure",
+    "news_like" = "Exposure",
+    "news_like_self" = "Exposure", 
+    
+    "conditionMore News - Experiment" = "Treatment", 
+    "conditionNo News - Experiment" = "Treatment",   
+    
+    "conditionMore News - Experiment:news_self" = "Exposure × Treatment", 
+    "conditionMore News - Experiment:news_like_self" = "Exposure × Treatment", 
+    "conditionMore News - Experiment:news" = "Exposure × Treatment", 
+    "conditionMore News - Experiment:news_like" = "Exposure × Treatment", 
+    
+    "conditionNo News - Experiment:news_self" = "Exposure × Treatment",
+    "conditionNo News - Experiment:news_like_self" = "Exposure × Treatment", 
+    "conditionNo News - Experiment:news" = "Exposure × Treatment",
+    "conditionNo News - Experiment:news_like" =   "Exposure × Treatment")) %>% 
+  
+  mutate(varno = case_when(
+    
+    # Main effects
+    modelname == "Treatment Effects" ~ 17, 
+    
+    # News exposure - self-report
+    modelname == "Prior News Exposure (Self-Report)" & 
+      coeff == "Treatment" ~ 15, 
+    modelname == "Prior News Exposure (Self-Report)" & 
+      coeff == "Exposure" ~ 14, 
+    modelname == "Prior News Exposure (Self-Report)" & 
+      coeff == "Exposure × Treatment" ~ 13, 
+    
+    # News exposure - behavioral 
+    modelname == "Prior News Exposure (Behavioral)" & coeff == "Treatment" ~ 11, 
+    modelname == "Prior News Exposure (Behavioral)" & coeff == "Exposure" ~ 10, 
+    modelname == "Prior News Exposure (Behavioral)" & 
+      coeff == "Exposure × Treatment" ~ 9, 
+    
+    # Like-minded news exposure - self-report 
+    modelname == "Prior Like-Minded News Exposure (Self-Report)" & 
+      coeff == "Treatment" ~ 7, 
+    modelname == "Prior Like-Minded News Exposure (Self-Report)" & 
+      coeff == "Exposure" ~ 6, 
+    modelname == "Prior Like-Minded News Exposure (Self-Report)" & 
+      coeff == "Exposure × Treatment" ~ 5, 
+    
+    # Like-minded news exposure - behavioral 
+    modelname == "Prior Like-Minded News Exposure (Behavioral)" & 
+      coeff == "Treatment" ~ 3, 
+    modelname == "Prior Like-Minded News Exposure (Behavioral)" & 
+      coeff == "Exposure" ~ 2, 
+    modelname == "Prior Like-Minded News Exposure (Behavioral)" & 
+      coeff == "Exposure × Treatment" ~ 1, 
+  )) %>%
+  mutate(country = recode(country,
+    "Poland" = "More News", 
+    "United States" = "No News"
+  )) %>% 
+  mutate(var = recode(var,
+      'know_r' = 'A. Political Engagement:\nSelf-perceived Knowledge', 
+      'know_fac_r' = 'B. Political Engagement:\nActual Knowledge', 
+      'ptc_r' = 'C. Political Engagement:\nParticipation', 
+      'att_str_r' = 'D. Attitude Polarization:\nAttitude Strength', 
+      'att_imp_r' = 'E. Attitude Polarization:\nAttitude Importance',
+      'ft_r' = 'F. Affective Polarization:\nFeeling Thermometer', 
+      'under_r' = 'G. Affective Polarization:\nLack of Understanding', 
+      'stupid_r' = 'H. Affective Polarization:\nStupid', 
+      'malvol_r' = 'I. Negative System Perceptions:\nAttribution of Malevolence',
+      'comp_r' = 'J. Negative System Perceptions:\nNo Support for Compromise',
+      'perpol_r' = 'K. Negative System Perceptions:\nPerceived Polarization',
+      'well_feel_r' = 'L. Well-being: Mental', 
+      'well_act_r' = 'M. Well-being: Physical'))
+```
+
+```{r}
+
+dist = 0.25
+s = 2
+s2 = 0.3
+
+fig_dat$varno_r[fig_dat$country == "More News"] = fig_dat$varno + dist
+fig_dat$varno_r[fig_dat$country == "No News"] = fig_dat$varno - dist
+
+ggplot() + 
+  geom_vline(xintercept = 0, linetype = "dashed", colour = "grey60") + 
+  
+  # Main analyses
+  geom_segment(data = subset(fig_dat, data == "All"),
+               aes(y = varno_r, yend = varno_r, 
+                   xend = ub, x = lb, colour = country), 
+               size = s, lineend = "round", alpha = 0.7) + 
+  geom_point(data = subset(fig_dat, data == "All"), 
+             aes(y = varno_r, x = est, shape = data, fill = country), 
+             color = "white", size = s2) + 
+  
+  
+  # Compliance checks 
+  geom_point(data = subset(fig_dat, data == "Self-Reported Compliers"), 
+             aes(y = varno_r, x = est, shape = data, group = country), 
+             color = "black") + 
+  
+  geom_point(data = subset(fig_dat, data == "Online Compliers"), 
+             aes(y = varno_r, x = est, shape = data, group = country), 
+             color = "black", size = s2) +
+  
+  scale_y_continuous(
+    
+   breaks = c(1:18),
+   
+   labels = c(
+     "Treatment", "Exposure", "Treatment × Exposure", 
+     expression(bold("Model 3b: Congenial News (Behavioral)")), 
+     
+     "Treatment", "Exposure", "Treatment × Exposure", 
+     expression(bold("Model 3a: Congenial News (Self-Report)")), 
+     
+     "Treatment", "Exposure", "Treatment × Exposure", 
+     expression(bold("Model 2b: News News (Behavioral)")), 
+     
+     "Treatment", "Exposure", "Treatment × Exposure", 
+     expression(bold("Model 2a: News (Self-Report)")), 
+     
+     "Treatment", 
+     expression(bold("Model 1: Treatment"))
+     
+   )) + 
+  
+  scale_x_continuous(limits = c(-40,40))+ 
+  
+  scale_fill_manual(values = c("grey60", "goldenrod1")) + 
+  scale_colour_manual(values = c("grey60", "goldenrod1")) + 
+  scale_shape_manual(values = c(21, 8, 4)) + 
+  
+  theme_minimal() + 
+  facet_wrap(var ~ ., ncol = 5) +
+  theme(legend.position = 'bottom', legend.title = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.spacing = unit(1, "lines"), axis.title = element_blank(), 
+        axis.text.y = element_text(size = 7)
+        ) 
+  
+ggsave(paste0(figdir, "Figure 3 - Results.png"), 
+       device = "png", width = 16, height = 11)
+```
+
+#scale_fill_manual(values = c("grey60", "deepskyblue2")) +
+  # scale_colour_manual(values = c("grey60", "deepskyblue2")) +
+  # facet_grid(dv + level ~ model) + 
+
+```{r}
+fig_dat = subset(models, stat == "Mean" & 
+                  variable != "0. Intercept" & 
+                  variable != "0. Wave")
+fig_dat = fig_dat[order(fig_dat$variable),]
+fig_dat$varno = as.numeric(str_split_fixed(fig_dat$variable, "\\.", 2)[,1])
+fig_dat$varname = str_split_fixed(fig_dat$variable, "\\.", 2)[,2]
+
+dist = 0.24
+s = 3
+
+ggplot() + 
+  geom_vline(xintercept = 0, linetype = "dashed", colour = "grey60") + 
+  geom_segment(data = subset(fig_dat, data == "Study 1"),
+               aes(y = varno - dist, yend = varno - dist, 
+                   xend = ub, x = lb, colour = data), 
+               size = s, lineend = "round", alpha = 0.7) + 
+  geom_point(data = subset(fig_dat, data == "Study 1"), 
+             aes(y = varno - dist, x = est, fill = data), 
+             shape = 21, color = "white") + 
+  geom_segment(data = subset(fig_dat, data == "Study 2"),
+               aes(y = varno + dist, yend = varno + dist, 
+                   xend = ub, x = lb, colour = data), 
+               size = s, lineend = "round", alpha = 0.7) + 
+  geom_point(data = subset(fig_dat, data == "Study 2"), 
+             aes(y = varno + dist, x = est, fill = data), 
+             shape = 21, color = "white") + 
+  scale_y_continuous(breaks = c(1:8), 
+                     labels = unique(fig_dat[order(fig_dat$varno),]$varname))+ 
+  scale_x_continuous(limits = c(-10,10))+ 
+  scale_fill_manual(values = c("grey60", "deepskyblue2")) +
+  scale_colour_manual(values = c("grey60", "deepskyblue2")) +
+  facet_grid(dv + level ~ model) + 
+  theme_minimal() + 
+  theme(legend.position = 'bottom', legend.title = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.spacing = unit(2, "lines"), axis.title = element_blank())
+
+
+
+```
+
+
+
+
+results = list()
+  
+for (dv in dvs){
+  print(dv)
+  for (condition in c("Experiment", "Control")){
+    for (i in 1:2){
+      dat = list(us, pl)[[i]]
+      country = c("United States", "Poland")[i]
+      condition_text = list(
+        c("No News", "Control"), 
+        c("More News", "Control")
+      )[[i]]
+    
+    var = c(subset(dat, condition == condition, 
+                   select = paste0(dv, "_post_r")))[[1]] 
+      
+    results[[length(results) + 1]] = data.frame(
+      country = country,
+      variable = dv, 
+      condition = condition_text, 
+      describe(var))
+    }}}
+
+results = do.call(rbind, results)
+
+attach(results)
+results = cbind(results, get_ci(mean, se, n, 0.95))
+
+

@@ -1,0 +1,93 @@
+---
+title: "7. Table B.1 - Experiment vs population statistics"
+---
+
+Import and mutate data
+```{r}
+source('helpers.R')
+
+df = read.csv(paste0(datadir, "us_survey_long.csv")) %>% 
+  mutate(country = "United States") %>% 
+  bind_rows(
+    list(., read.csv(paste0(datadir, "pl_survey_long.csv")) %>%
+            mutate(country = "Poland"))) %>%
+  filter(condition != "") %>%
+  mutate(age_new = recode(age, 
+                          "Age: 35–44" = "Age: 25–54", 
+                          "Age: 45–54" = "Age: 25–54")) %>% 
+  mutate(edu_new = 
+           recode(edu, 
+                  "Education: Bachelor" = "Education: Bachelor degree", 
+                  "Education: High school" = 
+                    "Education: High school or vocational degree", 
+                  "Education: Junior college" = "Education: Some college", 
+                  "Education: Vocational degree" = 
+                    "Education: High school or vocational degree")) %>%
+  mutate(sex_new = 
+           recode(sex,
+                  "Female" = "Sex: Female", 
+                  "Male" = "Sex: Male"))
+```
+
+Create table with population statistics
+```{r}
+tab = data.frame(
+  value = c(
+    "Age: 0–17", "Age: 18–24", "Age: 25–54", "Age: 55+", 
+    # Education
+    "Education: Less than high school", 
+    "Education: High school or vocational degree",
+    "Education: Some college", 
+    "Education: Bachelor degree",
+    "Education: Graduate school",
+    # Sex
+    "Sex: Male", "Sex: Female"),
+  
+  pop_us = c(
+    18.73, 13.27, 39.45, 28.54, # age
+    9.92, 28.11, 27.34, 22.55, 12.07, # education
+    48.9, 51.1 # gender
+    ),
+  
+  pop_pl = c(
+    14.8, 10.34, 43.44, 31.42, # age
+    NA, NA, NA, NA, NA, # education
+    48.5, 51.5 # gender
+    )
+  )
+```
+
+Tabulate percentages
+```{r}
+proptab = function(x, var) {
+  x = x[x %in% tab$value]
+  x = data.frame(prop.table(table(x)))
+  x$Freq = x$Freq*100
+  colnames(x) = c("value", var)
+  x[,var] = sprintf("%.2f", x[,var])
+  return(x)}
+
+for (cntry in c("Poland", "United States")){
+
+  tab = tab %>% 
+    left_join(.,
+        rbind(
+          proptab(df[df$country == cntry, "age_new"], cntry), 
+          proptab(df[df$country == cntry, "edu_new"], cntry),
+          proptab(df[df$country == cntry, "sex_new"], cntry)
+          ) %>%
+          mutate(value = as.character(value)),
+        by = "value")
+  
+}
+
+write_xlsx(tab, paste0(tabdir, "Table B.1 - Experiment vs. Population.xlsx"))
+```
+
+```{r}
+tab = tab %>% mutate(across(everything(), as.character))
+
+latex(tab, file="")
+```
+
+

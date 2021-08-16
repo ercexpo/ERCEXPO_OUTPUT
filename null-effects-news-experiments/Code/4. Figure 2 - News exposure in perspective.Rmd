@@ -1,0 +1,128 @@
+---
+title: "4. Figure 2 - News exposure in perspective"
+---
+
+Import trace data 
+```{r}
+source('helpers.R')
+us_visits = 
+  subset(read.csv(paste0(datadir, "us_trace_visits.csv")), 
+         wave < 4 & person_id %in% us_ids) %>% 
+  left_join(.,
+  select(read.csv(paste0(datadir, "us_trace_ideology.csv")), 
+          c("domain", "Wilson.score")) %>% 
+     setNames(., c("domain", "ideo")) %>%
+    mutate(ideo_cat = case_when(
+      ideo < -0.2 ~ "Left", 
+      ideo > -0.2 & ideo < 0.08 ~ "Center", 
+      ideo > 0.08 ~ "Right"
+    )), 
+  by = c("score_domain" = "domain")) %>% 
+  left_join(., select(read.csv(paste0(datadir, "us_survey_wide.csv")),
+                      c("person_id", "party_bin")), by = "person_id")
+
+pl_visits = 
+  subset(read.csv(paste0(datadir, "pl_trace_visits.csv")), 
+         wave < 4 & person_id %in% pl_ids) %>% 
+  left_join(.,
+  select(read.csv(paste0(datadir, "pl_trace_ideology.csv")), 
+          c("domain", "Ideology.3.level")) %>% 
+     setNames(., c("domain", "ideo_cat")), 
+  by = c("score_domain" = "domain")) %>% 
+  left_join(., select(read.csv(paste0(datadir, "pl_survey_wide.csv")),
+                      c("person_id", "party_bin")), by = "person_id")
+```
+
+Generate congenial/cross-cutting news exposure variable
+```{r}
+us_visits$news_type[us_visits$ideo_cat == "Center"] = "center"
+us_visits$news_type[
+  us_visits$ideo_cat == "Left" & us_visits$party_bin == "Democrat" |
+  us_visits$ideo_cat == "Right" & us_visits$party_bin == "Republican"] = 
+  "like" 
+
+us_visits$news_type[
+  us_visits$ideo_cat == "Left" & us_visits$party_bin == "Republican" |
+  us_visits$ideo_cat == "Right" & us_visits$party_bin == "Democrat"] = 
+  "cross" 
+
+pl_visits$news_type[pl_visits$ideo_cat == "center"] = "center"
+pl_visits$news_type[
+  pl_visits$ideo_cat == "left" & pl_visits$party_bin == "Anti" |
+  pl_visits$ideo_cat == "right" & pl_visits$party_bin == "Pro"] = 
+  "like" 
+
+pl_visits$news_type[
+  pl_visits$ideo_cat == "left" & pl_visits$party_bin == "Pro" |
+  pl_visits$ideo_cat == "right" & pl_visits$party_bin == "Anti"] = 
+  "cross" 
+```
+
+Aggregate dataset and merge with totals 
+```{r}
+pl_visits = left_join(
+  subset(read_xlsx(paste0(datadir, "pl_trace_totals.xlsx")),
+         person_id %in% pl_ids),
+  left_join(
+    aggregate(id ~ person_id, data = pl_visits, FUN = length) %>% 
+      setNames(c("person_id", "count")),
+    aggregate(id ~ person_id + news_type, data = pl_visits, FUN = length) %>% 
+      setNames(c("person_id", "news_type", "count")) %>% 
+      mutate(news_type = factor(news_type)) %>% 
+      panel_data(., id = person_id, wave = news_type) %>% 
+      widen_panel(.) %>% 
+      mutate(person_id = as.numeric(as.character(person_id))), 
+    by = "person_id"), 
+  by = "person_id"
+  ) %>% 
+  mutate(visits_total = rowSums(select(., paste0("visits_u_w", 1:3))))
+
+us_visits = left_join(
+  subset(read.csv(paste0(datadir, "us_trace_totals.csv")),
+         person_id %in% us_ids),
+  left_join(
+    aggregate(id ~ person_id, data = us_visits, FUN = length) %>% 
+      setNames(c("person_id", "count")),
+    aggregate(id ~ person_id + news_type, data = us_visits, FUN = length) %>% 
+      setNames(c("person_id", "news_type", "count")) %>% 
+      mutate(news_type = factor(news_type)) %>% 
+      panel_data(., id = person_id, wave = news_type) %>% 
+      widen_panel(.) %>% 
+      mutate(person_id = as.numeric(as.character(person_id))), 
+    by = "person_id"), 
+  by = "person_id"
+  ) %>% 
+  mutate(visits_total = rowSums(select(., paste0("visits_u_w", 1:3))))
+```
+
+```{r}
+fig2 = data.frame(
+  total = c(sum(us_visits$visits_total, na.rm = T),
+            sum(pl_visits$visits_total, na.rm = T)),
+  news_total = c(sum(us_visits$count, na.rm = T),
+                 sum(pl_visits$count, na.rm = T)), 
+  news_center = c(sum(us_visits$count_center, na.rm = T),
+                 sum(pl_visits$count_center, na.rm = T)), 
+  news_cross = c(sum(us_visits$count_cross, na.rm = T),
+                 sum(pl_visits$count_cross, na.rm = T)), 
+  news_like = c(sum(us_visits$count_like, na.rm = T),
+                 sum(pl_visits$count_like, na.rm = T))
+  )
+
+fig2 = bind_rows(fig2, (fig2 %>% purrr::map_dbl(sum) %>% t() %>% data.frame()))
+
+fig2 = fig2 %>% 
+  mutate(news_with_ideo = (news_center + news_cross + news_like)) %>% 
+  mutate(news_total_perc = (news_total / total)*100) %>% 
+  mutate(news_center_perc = (news_center / total)*100) %>% 
+  mutate(news_cross_perc = (news_cross / total)*100) %>% 
+  mutate(news_like_perc = (news_like / total)*100) %>% 
+  mutate(news_center_within_perc = (news_center / news_with_ideo)*100) %>% 
+  mutate(news_cross_within_perc = (news_cross / news_with_ideo)*100) %>% 
+  mutate(news_like_within_perc = (news_like / news_with_ideo)*100)
+  
+fig2$country = c("United States", "Poland", "Combined")
+
+write_xlsx(fig2, paste0(figdir, "Figure 2 - Data.xlsx"))
+```
+

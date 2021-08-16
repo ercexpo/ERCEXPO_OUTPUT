@@ -1,0 +1,200 @@
+---
+title: "1. Browsing Data Processing [do not run]"
+---
+
+Import trace data containing the totals, incl. number of active days
+```{r}
+knitr::opts_chunk$set(message = FALSE, warning = FALSE)
+
+# source file 
+source('helpers.R')
+
+# Import data 
+totals_pl = read_xlsx(paste0(datadir, "pl_trace_totals.xlsx"))
+totals_us =read.csv(paste0(datadir, "us_trace_totals.csv"))
+colnames(totals_us) = gsub("raw_visits", "visits_raw", names(totals_us))
+```
+
+Import trace data and merge with ideology scores
+```{r}
+visits_pl = 
+  read.csv(paste0(datadir, "pl_trace_visits.csv")) %>%
+  left_join(., 
+            select(read.csv(paste0(datadir, "pl_trace_ideology.csv")),
+            c("domain", "Ideology.point.estimate", "Ideology.3.level")) %>% 
+            setNames(., c("domain", "ideology", "ideology_cat")),
+            by = c("score_domain" = "domain")) 
+  
+visits_us = 
+  select(read.csv(paste0(datadir, "us_trace_visits.csv")), -c("political")) %>%
+  left_join(., 
+            select(read.csv(paste0(datadir, "us_trace_ideology.csv")),
+            c("domain", "ideology_cat.score", "ideology_cat.score.cat")) %>% 
+            setNames(., c("domain", "ideology", "ideology_cat")),
+            by = c("score_domain" = "domain"))
+```
+
+
+Function to aggregate visit level data as mean visited (political) news sites
+per day, or as a percentage of total browsing. 
+```{r}
+process_trace_data = function(
+  ids = NULL, 
+  totals = NULL, 
+  visits = NULL, 
+  waves = NULL, 
+  calculate_mean = F, 
+  calculate_perc = F,
+  n_active_days = 0
+){
+
+# subset correct ids according to number of active days 
+for (i in waves){
+  totals = totals[totals[paste0("active_days_w", i)] >= n_active_days,]
+}
+
+# aggregate data for each wave and for news domains
+
+visits_list = list()
+
+for (w in waves){
+  
+  temp = subset(visits, ideology_cat != "" & wave == w)
+  
+  temp$y = 0
+    
+  # aggregate data 
+  temp = aggregate(y ~ person_id + ideology_cat, data = temp, FUN = length)
+    
+  # widen dataset 
+  temp$ideology_cat = factor(temp$ideology_cat)
+  temp = panel_data(temp, id = "person_id", wave = "ideology_cat")
+  temp = widen_panel(temp, separator = "_")
+  temp$person_id = as.character(temp$person_id)
+    
+  colnames(temp)[2:length(temp)] = 
+  paste0("domain_", names(temp)[2:length(temp)], "_w", w)
+    
+  visits_list[[length(visits_list) + 1]] = temp
+}
+
+# bind waves together in wide dataframe
+temp = visits_list[[1]]
+
+for (i in 2:length(visits_list)){
+  temp = merge(temp, visits_list[[i]], by = "person_id")
+}
+
+visits_list = temp
+
+# merge with totals
+visits_list = merge(totals, visits_list, by = "person_id", all.x = T)
+
+# replace NAs by zeros 
+for (col in 2:length(visits_list)){
+  visits_list[is.na(visits_list[,col]),col] = 0
+}
+
+# subset appropriate columns 
+
+  # news domains 
+  domain_vars = names(visits_list)[grepl("domain", names(visits_list))]
+    
+  vars = c(names(totals), domain_vars)
+  vars = vars[grepl(paste(paste0("w", waves), collapse = "|"), vars)]
+  
+  temp = select(visits_list, c("person_id", vars))
+
+# calculate means 
+if (calculate_mean == T){
+  
+  for (var in names(temp)[grepl("left|center|right", tolower(names(temp)))]){
+      
+    for (wave in waves){
+      if (grepl(paste0("_w", wave), var) == T){
+        temp[,paste0(var, "_mean_w", wave)] = 
+          temp[,var] / temp[,paste0("active_days_w", wave)]
+  }}}
+}
+  
+# calculate proportions
+if (calculate_perc == T){
+  
+  vars = names(temp)[grepl("left|center|right", tolower(names(temp)))]
+  vars = vars[!grepl("_mean", vars)]
+  
+  for (var in vars){
+      
+    for (wave in waves){
+      if (grepl(paste0("_w", wave), var) == T){
+        temp[,paste0(var, "_perc_w", wave)] = 
+          temp[,var] / temp[,paste0("visits_u_w", wave)]
+  }}}
+}
+  
+  colnames(temp) = tolower(names(temp))
+  colnames(temp) = gsub("_y", "", names(temp))
+  
+  for (wave in waves){
+  wave = paste0("_w", wave)
+  names(temp)[grepl(wave, names(temp))] = 
+    paste0(gsub(wave, "", names(temp)[grepl(wave, names(temp))]), wave)
+  }
+  
+  return(temp)
+
+} # end of function
+
+```
+
+```{r}
+pl = process_trace_data(ids = pl_ids,
+                        totals = totals_pl, 
+                        visits = visits_pl, 
+                        waves = c(1,2), 
+                        calculate_mean = T, 
+                        calculate_perc = F, 
+                        n_active_days = 1)
+
+us = process_trace_data(ids = us_ids,
+                        totals = totals_us, 
+                        visits = visits_us, 
+                        waves = c(1,2,3), 
+                        calculate_mean = T, 
+                        calculate_perc = F, 
+                        n_active_days = 1)
+
+write.csv(pl, paste0(datadir, "pl_trace_aggregates.csv"), row.names = F)
+write.csv(us, paste0(datadir, "us_trace_aggregates.csv"), row.names = F)
+```
+
+Merge with post-survey data 
+```{r}
+source('helpers.R')
+pl = left_join(
+  left_join(haven::read_sav(paste0(datadir, "pl_survey_post.sav")),
+            read.csv(paste0(datadir, "person_ids.csv")), by = "respondent_id"),
+  read.csv(paste0(datadir, "pl_trace_aggregates.csv")), by = "person_id")
+
+us = read.csv(paste0(datadir, "us_survey_raw.csv"))[3:807,] %>%
+  mutate(email11 = gsub("\\$", "", email11)) %>% 
+  mutate(RecipientEmail = gsub("\\$", "", RecipientEmail)) %>% 
+  mutate(RecipientEmail = 
+           ifelse(RecipientEmail == "", email11, RecipientEmail)) %>%
+  left_join(., select(read.csv(paste0(datadir, "us_survey_ids.csv")), 
+                      c("email", "ResponseId_W3")), 
+            by = c("RecipientEmail" = "email"), all.x = T) %>% 
+  subset(., !is.na(ResponseId_W3)) %>% 
+  left_join(., select(read.csv(paste0(datadir, "us_survey_all.csv")), 
+                      c("person_id", "ResponseId_w3")), 
+            by = c("ResponseId_W3" = "ResponseId_w3")) %>% 
+  select(., -c(
+    catchvar(., c("email", "lastname", "firstname", "ipaddress",
+                   "responseid", "location"))
+  )) %>% 
+  left_join(.,read.csv(paste0(datadir, "us_trace_aggregates.csv")), 
+            by = "person_id")
+
+write.csv(pl, paste0(datadir, "pl_survey_post.csv"))
+write.csv(us, paste0(datadir, "us_survey_post.csv"))
+```

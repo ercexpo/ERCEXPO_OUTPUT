@@ -1,0 +1,155 @@
+
+
+
+```{r}
+results = list()
+  
+for (dv in dvs){
+  print(dv)
+  for (condition in c("Experiment", "Control")){
+    for (i in 1:2){
+      dat = list(us, pl)[[i]]
+      country = c("United States", "Poland")[i]
+      condition_text = list(
+        c("No News", "Control"), 
+        c("More News", "Control")
+      )[[i]]
+    
+    var = c(subset(dat, condition == condition, 
+                   select = paste0(dv, "_post_r")))[[1]] 
+      
+    results[[length(results) + 1]] = data.frame(
+      country = country,
+      variable = dv, 
+      condition = condition_text, 
+      describe(var))
+    }}}
+
+results = do.call(rbind, results)
+
+attach(results)
+results = cbind(results, get_ci(mean, se, n, 0.95))
+```
+
+
+
+```{r}
+for (i in 1:12){
+  
+  dv = c("polknow", "ptc", "att_strength", "att_imp", "ap_ft", "ap_under", 
+  "ap_stupid", "malvol", "compromise", "perpol", "well_feel", "well_act")[i]
+  
+  dv_name = c("Engagement: Political Knowledge", 
+              "Engagement: Participation", 
+              "Polarization: Attitude Strength", 
+              "Polarization: Attitude Importance",
+              "Polarization: Affective Polarization: Feeling Thermometer", 
+              "Polarization: Affective Polarization: No Understanding", 
+              "Polarization: Affective Polarization: Stupid", 
+              "Systemic Outcomes: Attribution of Malevolence",
+              "Systemic Outcomes: Support for Compromise",
+              "Systemic Outcomes: Perceived Polarization", 
+              "General Well-Being: Emotional Well-being", 
+              "General Well-Being: Physical Well-being"
+              )[i]
+
+  for (cntry in c("United States", "Poland")){
+    library(ggstatsplot)
+    
+    if (cntry == "United States"){
+      dat = us
+      plotname = c("Figure 1", " - Results No News.png")
+    } else {
+      dat = pl
+      plotname = c("Figure 2", " - Results More News.png")
+    }
+
+    dat = select(dat, c("condition", paste0(dv, "_post_r")))
+    dat = dat[dat[,"condition"] != "",]
+    colnames(dat) = c("condition", "var")
+
+
+    dat$var = jitter(dat$var, factor = 1.8)
+  
+    # plot
+    p = ggbetweenstats(
+      data = dat,
+      x = condition,
+      y = var,
+      effsize.type = "eta", 
+      xlab = "", ylab = "",
+      title = dv_name, 
+      type = "parametric",
+      pairwise.display = "all",
+      palette = "default_jama",
+      package = "ggsci", 
+      centrality.point.args = list(size = 4, color = "black"), 
+      point.args = 
+        list(position = ggplot2::position_jitterdodge(dodge.width = 0.6))) + 
+      ggplot2::scale_color_manual(values = c("#999999", "#E69F00", "#56B4E9")) 
+
+
+ggsave(plot = p, 
+       filename = paste0(figdir, plotname[1], (letters[1:12])[i], plotname[2]), 
+       device = "png")
+}}
+```
+
+```{r}
+us$EndDate_w3 = 
+  as.Date(str_split_fixed(us$EndDate_w3, " ", 2)[,1], format = "%Y-%m-%d")
+
+us_visits = 
+  aggregate(id ~ created_local_date + no_news_rel + person_id, 
+            data = subset(read.csv(paste0(datadir, "us_trace_visits.csv")),
+                          wave %in% c(3,4)), 
+            FUN = length)
+
+us_visits = us_visits[us_visits$person_id %in% us$person_id,]
+
+colnames(us_visits) = c("date", "no_news", "person_id", "count")
+
+us_visits = merge(us_visits, 
+                  select(us, c("person_id", "EndDate_w3", "condition")), 
+                  by = "person_id", all.x = T)
+us_visits$date = as.Date(us_visits$date, format = "%Y-%m-%d")
+
+us_visits$t_min_1 = us_visits$date - us_visits$EndDate_w3
+us_visits$t_min_1 = as.numeric(us_visits$t_min_1)
+
+us_visits = us_visits[us_visits$t_min_1 >= -7 & us_visits$t_min_1 <= 7,]
+us_visits = us_visits[us_visits$condition!="",]
+
+temp = list() 
+
+for (i in 1:800){
+  person_id = us$person_id[i]
+  
+  dat = data.frame(
+    person_id = rep(person_id, 15), 
+    t_min_1 = -7:7, 
+    condition = rep(us$condition[i], 15))
+  
+  visit_dat = us_visits[us_visits$person_id == person_id,]
+  
+  if (nrow(visit_dat) > 0){
+  dat = 
+    merge(dat, select(visit_dat, c("t_min_1", "count")), 
+          by = c("t_min_1"), all.x = T)
+  } else {
+    dat$count = 0
+  }
+  
+  dat$count[is.na(dat$count)] = 0
+  
+  temp[[i]] = dat 
+}
+
+us_visits = do.call(rbind, temp)
+
+temp = aggregate(count ~ t_min_1 + condition, us_visits, FUN = sum)
+
+ggplot(temp, aes(x = t_min_1, y = count, color = condition)) + 
+  geom_point()
+```
+

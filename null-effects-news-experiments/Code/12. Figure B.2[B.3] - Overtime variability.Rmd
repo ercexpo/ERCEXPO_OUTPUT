@@ -1,0 +1,107 @@
+---
+title: "12. Figure B.2[B.3] - Overtime variability dependendent variables"
+---
+
+Function to create circular plots
+```{r}
+source('helpers.R')
+
+chordify = function(var, varname){
+  # Create an edge list
+  w1 = df[,paste0(var, "_w1")]; w2 = df[,paste0(var, "_w2")]
+  w1[w1 == 100] = 99; w2[w2 == 100] = 99
+  
+  data = data.frame(origin = round_any(as.matrix(w1)[,1],20, floor), 
+                    destination = round_any(as.matrix(w2)[,1],20, floor))
+  data$origin = paste0(data$origin, "-", data$origin+20) 
+  data$destination = paste0(data$destination, "-", data$destination+20)
+  
+  # Transform input data in a adjacency matrix
+  data = with(data, table(origin, destination))
+  
+  gridcol = c(`0-20` = "grey80", `20-40` = "gold", `40-60` = "goldenrod", 
+             `60-80` = "gold3", `80-100` = "gold4")
+
+  plot = chordDiagram(data, grid.col = gridcol, transparency = 0.5)
+  # Make the circular plot
+  png(filename = paste0(figdir, outname, ".png"), res = 400, height = 3000, 
+      width = 3000)
+  plot
+  dev.off()
+  
+  return(plot)
+}
+```
+
+Use chordify to plot variables
+```{r}
+plots = list() 
+
+for (j in 1:2){
+  
+  datname = c("us_survey_long.csv", "pl_survey_long.csv")[j]
+  cntry = c("United States", "Poland")[j]
+  no = c(2,3)[j]
+  
+  dat = read.csv(paste0(datadir, datname)) %>% 
+    panel_data(., id = person_id, wave = wave) %>%
+    widen_panel(., separator = "_w") 
+  
+  for (i in c(1:8)){
+    var = c("att_str_r", "att_imp_r", "ft_r", "under_r", 
+            "stupid_r", "malvol_r", "comp_r", "perpol_r")[i]
+    
+    varname = c("Attitude Strength", "Attitude Importance", 
+                "Feeling Thermometer", "Understanding", "Stupid", 
+                "Malevolence", "Compromise", "Perceived Polarization")[i]
+    
+    df = dat[!is.na(dat[,paste0(var, "_w1")]) & 
+             !is.na(dat[,paste0(var, "_w2")]) ,]
+    
+    outname = 
+      paste0("Figure B.", no, " - Overtime variability dependent variables ",
+             cntry, " (", letters[1:8], ") ", varname)[i]
+    chordify(var, outname)
+    
+    plots[[length(plots) + 1]] = outname
+    }
+}
+```
+
+
+```{r}
+library(png)
+library(grid)
+library(gridExtra)
+
+img = list()
+
+for (i in 1:16){img[[i]] = readPNG(paste0(figdir, plots[[i]], ".png"))}
+
+png(filename = 
+      paste0(figdir, "Figure B.2 - Overtime variability United States.png"), 
+    res = 400, height = 3000, width = 3000)
+  grid.arrange(
+  rasterGrob(img[[1]]), rasterGrob(img[[2]]),
+  rasterGrob(img[[3]]), rasterGrob(img[[4]]),
+  rasterGrob(img[[5]]), rasterGrob(img[[6]]),
+  rasterGrob(img[[7]]), rasterGrob(img[[8]]),
+  ncol=3)
+dev.off()
+
+png(filename = 
+      paste0(figdir, "Figure B.3 - Overtime variability Poland.png"), 
+    res = 400, height = 3000, width = 3000)
+  grid.arrange(
+  rasterGrob(img[[9]]), rasterGrob(img[[10]]),
+  rasterGrob(img[[11]]), rasterGrob(img[[12]]),
+  rasterGrob(img[[13]]), rasterGrob(img[[14]]),
+  rasterGrob(img[[15]]), rasterGrob(img[[16]]),
+  ncol=3)
+dev.off()
+```
+
+
+
+
+

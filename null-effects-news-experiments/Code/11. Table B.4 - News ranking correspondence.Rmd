@@ -1,0 +1,80 @@
+---
+title: "11. Table B.4 - News ranking correspondence"
+---
+
+```{r}
+source("helpers.R")
+
+domains_us = read.csv(paste0(datadir, "us_trace_domains.csv")) %>%
+  mutate(domain = str_split_fixed(Domain, " ", 2)[,2]) %>% 
+  mutate(alexa_rank = str_split_fixed(Domain, " ", 2)[,1])
+
+domains_us = domains_us %>%
+  filter(domain %in% 
+         subset(read.csv(paste0(datadir, "us_trace_visits.csv")), 
+                wave == 1)$score_domain) %>%
+  arrange(as.numeric(alexa_rank)) %>%
+  mutate(alexa_rank = 1:nrow(.)) %>%
+  left_join(., 
+            read.csv(paste0(datadir, "us_trace_visits.csv")) %>% 
+              subset(., wave == 1) %>% 
+              aggregate(id ~ score_domain, data = ., FUN = length) %>% 
+              setNames(c("domain", "count")) %>% 
+              filter(domain %in% domains_us$domain) %>%
+              arrange(desc(count)) %>%
+              mutate(own_rank = 1:nrow(.)), 
+            by = c("domain" = "domain")) %>% 
+  select(., c("domain", "alexa_rank", "own_rank"))
+
+cor(cbind(domains_us$alexa_rank, domains_us$own_rank), 
+    method = "spearman", use = "complete.obs")
+
+colnames(domains_us) = paste0(names(domains_us), "_us")
+
+write_xlsx(domains_us, 
+           paste0(tabdir, "Table B.4 - News ranking United States"))
+```
+
+```{r}
+domains_pl = read.csv(paste0(datadir, "pl_trace_domains.csv")) %>%
+  filter(Domain %in% 
+         subset(read.csv(paste0(datadir, "pl_trace_visits.csv")), 
+                wave == 1)$score_domain) %>%
+  arrange(as.numeric(Rank)) %>%
+  mutate(alexa_rank = 1:nrow(.)) 
+
+domains_pl = domains_pl %>%
+  left_join(., 
+            read.csv(paste0(datadir, "pl_trace_visits.csv")) %>% 
+              subset(., wave == 1) %>% 
+              aggregate(id ~ score_domain, data = ., FUN = length) %>% 
+              setNames(c("domain", "count")) %>% 
+              filter(domain %in% domains_pl$Domain) %>%
+              arrange(desc(count)) %>%
+              mutate(own_rank = 1:nrow(.)), 
+            by = c("Domain" = "domain")) %>% 
+  select(., c("Domain", "alexa_rank", "own_rank")) %>% 
+  setNames(c("domain", "alexa_rank", "own_rank"))
+
+cor(cbind(domains_pl$alexa_rank, domains_pl$own_rank), 
+    method = "spearman", use = "complete.obs")
+
+write_xlsx(domains_pl, 
+           paste0(tabdir, "Table B.4 - News ranking Poland"))
+```
+
+
+```{r}
+tab = cbind(domains_us[1:20,] %>% 
+      mutate(domain_us = gsub("\\.com", "", domain_us)),
+      domains_pl[1:20,] %>% 
+      mutate(domain = gsub("\\.pl", "", domain)))
+
+write_xlsx(tab, 
+           paste0(tabdir, "Table B.4 - News rankings"))
+
+latex(tab, file = "")
+```
+
+
+

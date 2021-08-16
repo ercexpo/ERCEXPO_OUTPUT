@@ -1,0 +1,134 @@
+---
+title: "8. Table B.2 - Attrition by condition"
+---
+
+
+```{r}
+source('helpers.R')
+
+df = rbind(
+  read_rename_sav("pl_survey_w1.sav", "_w1") %>% 
+  left_join(., read_rename_sav("pl_survey_pre.sav", "_pre"), 
+            by = c("respondent_id_w1" = "respondent_id_pre"), 
+            keep = T) %>%
+  left_join(., read_rename_csv(paste0("pl_survey_post.csv"), "_post"), 
+            by = c("respondent_id_w1" = "respondent_id_post")) %>%
+  setNames(., tolower(names(.))) %>% 
+  mutate(sex = recode(sex_w1, `1` = "Sex: Male", `2` = "Sex: Female")) %>%
+  mutate(age = case_when(
+      age_w1 %in% 2 ~ "Age: 18–24",
+      age_w1 %in% 3:5 ~  "Age: 25–54",
+      age_w1 %in% 6 ~ "Age: 55+")) %>% 
+  mutate(edu = case_when(
+      edu_w1 == 1 ~ "Education: Less than high school",
+      edu_w1 %in% 2:3 ~ "Education: High school or vocational degree", 
+      edu_w1 == 4 ~ "Education: Some college",
+      edu_w1 == 5 ~  "Education: Bachelor degree",
+      edu_w1 == 6 ~ "Education: Graduate school")) %>%
+  mutate(condition = case_when(
+      wave2kontrolna_pre == 1 ~ "Control",
+      wave2eksperymentalna_pre == 1 ~ "Experiment"
+  )) %>% 
+  dplyr::rename(
+     start_pre = survey_start_time_pre, 
+     start_post = survey_start_time_post
+  ) %>% 
+  select(., c("sex", "age", "edu", "start_pre", "start_post", "condition")) %>% 
+  mutate(country = "PL"),
+  
+  read_rename_csv("us_survey_all.csv", "") %>% 
+  left_join(., read_rename_csv(paste0("us_survey_post.csv"), "_post"), 
+            by = c("person_id" = "person_id_post")) %>%
+  setNames(., tolower(names(.))) %>% 
+  mutate(age = case_when(
+    age_w0 %in% 0:17 ~ "Age: 0–17",
+    age_w0 %in% 18:24 ~ "Age: 18–24",
+    age_w0 %in% 25:54 ~ "Age: 25–54",
+    age_w0 %in% 55:200 ~ "Age: 55+")) %>% 
+  mutate(edu = recode(edu_w0_fac, 
+    `Associate Degree` = "Education: Some college", 
+    `College Degree (such as B.A., B.S.)` = "Education: Bachelor degree", 
+    `High school graduate` = "Education: High school or vocational degree", 
+    `Master's degree` = "Education: Graduate school", 
+    `Completed some college, but no degree` = "Education: Some college", 
+    `Completed some graduate, but no degree` = "Education: Bachelor degree", 
+    `Doctorate degree` = "Education: Graduate school", 
+    `Other post-high school vocational training` = "Education: High school", 
+    `Middle School - Grades 4-8` = "Education: Less than high school", 
+    `Completed some high school` = "Education: Less than high school"
+  )) %>% 
+  mutate(condition = recode(nonews_condition_post, 
+     `control` = "Control",
+     `experiment` = "Experiment")) %>%
+  dplyr::rename(
+     start_pre = startdate_w3, 
+     start_post = startdate_post, 
+     sex = gender_w0_fac
+  ) %>% 
+  mutate(sex = paste0("Sex: ", sex)) %>%
+  select(., c("sex", "age", "edu", "start_pre", "start_post", "condition")) %>% 
+  mutate(country = "US")
+  
+)
+```
+
+Create table with population statistics
+```{r}
+tab = data.frame(
+  value = c(
+    "Age: 0–17", "Age: 18–24", "Age: 25–54", "Age: 55+", 
+    # Education
+    "Education: Less than high school", 
+    "Education: High school or vocational degree",
+    "Education: Some college", 
+    "Education: Bachelor degree",
+    "Education: Graduate school",
+    # Sex
+    "Sex: Male", "Sex: Female")
+  )
+```
+
+Tabulate percentages
+```{r}
+proptab = function(x, colname) {
+  x = data.frame(prop.table(table(x)))
+  x$Freq = x$Freq*100
+  colnames(x) = c("value", var)
+  x[,var] = sprintf("%.2f", x[,var])
+  return(x)}
+
+for (cntry in c("US", "PL")){
+  
+  for (i in 1:3){
+  
+  var = c("start_pre", "start_post", "start_post")[i]
+  wave = paste0(cntry, c("_pre", "_post_control", "_post_exp")[i])
+  
+  if (i == 1){dat = subset(df, country == cntry)} 
+  if (i == 2){dat = subset(df, country == cntry & condition == "Control")}
+  if (i == 3){dat = subset(df, country == cntry & condition == "Experiment")}
+  
+  tab = tab %>% 
+    left_join(.,
+        rbind(
+          proptab(dat[!is.na(dat[,var]), "age"], wave), 
+          proptab(dat[!is.na(dat[,var]), "edu"], wave),
+          proptab(dat[!is.na(dat[,var]), "sex"], wave)
+          ) %>%
+          mutate(value = as.character(value)),
+        by = "value") 
+  
+  }}
+
+colnames(tab) = c("value", 
+                  "us_pre", "us_post_contr", "us_post_exp", 
+                  "pl_pre", "pl_post_contr", "pl_post_exp")
+
+write_xlsx(tab, paste0(tabdir, "Table B.2 - Attrition by condition.xlsx"))
+```
+
+```{r}
+latex(tab, file = "")
+```
+
+
