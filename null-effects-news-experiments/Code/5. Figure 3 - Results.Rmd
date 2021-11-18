@@ -170,7 +170,7 @@ pl_comp_web = read_sav(paste0(datadir, "pl_survey_pre.sav")) %>%
             by = "respondent_id") %>% 
   filter(person_id %in% pl_ids_exp$person_id) %>% 
   mutate(date_start = as.Date(
-    strapplyc(survey_start_time, "\\d+-\\d+-\\d+", simplify = TRUE),
+    gsubfn::strapplyc(survey_start_time, "\\d+-\\d+-\\d+", simplify = TRUE),
     format = "%Y-%m-%d")) %>% 
   mutate(date_before = date_start - 6) %>% 
   mutate(date_after = date_start + 6) %>% 
@@ -330,7 +330,10 @@ for (var in vars[1:13]){
 
 models = do.call(rbind, models)
 
-write_xlsx(models, paste0(figdir, "Figure 3 - Data.xlsx"))
+##apply the fdr adjustment
+models$p_adjusted <- p.adjust(models$p, method = "fdr")
+
+write_xlsx(models, paste0(tabdir, "Figure 3 - Data.xlsx"))
 ```
 
 ```{r}
@@ -419,6 +422,7 @@ s2 = 0.3
 fig_dat$varno_r[fig_dat$country == "More News"] = fig_dat$varno + dist
 fig_dat$varno_r[fig_dat$country == "No News"] = fig_dat$varno - dist
 
+## the figure for all participants 
 ggplot() + 
   geom_vline(xintercept = 0, linetype = "dashed", colour = "grey60") + 
   
@@ -428,18 +432,19 @@ ggplot() +
                    xend = ub, x = lb, colour = country), 
                size = s, lineend = "round", alpha = 0.7) + 
   geom_point(data = subset(fig_dat, data == "All"), 
-             aes(y = varno_r, x = est, shape = data, fill = country), 
+             aes(y = varno_r, x = est, #shape = data, 
+                 fill = country), 
              color = "white", size = s2) + 
   
   
   # Compliance checks 
-  geom_point(data = subset(fig_dat, data == "Self-Reported Compliers"), 
-             aes(y = varno_r, x = est, shape = data, group = country), 
-             color = "black") + 
-  
-  geom_point(data = subset(fig_dat, data == "Online Compliers"), 
-             aes(y = varno_r, x = est, shape = data, group = country), 
-             color = "black", size = s2) +
+  # geom_point(data = subset(fig_dat, data == "Self-Reported Compliers"), 
+  #            aes(y = varno_r, x = est, shape = data, group = country), 
+  #            color = "black") + 
+  # 
+  # geom_point(data = subset(fig_dat, data == "Online Compliers"), 
+  #            aes(y = varno_r, x = est, shape = data, group = country), 
+  #            color = "black", size = s2) +
   
   scale_y_continuous(
     
@@ -477,7 +482,118 @@ ggplot() +
         axis.text.y = element_text(size = 7)
         ) 
   
-ggsave(paste0(figdir, "Figure 3 - Results.png"), 
+ggsave(paste0(figdir, "Figure 3 - Results_all.png"), 
+       device = "png", width = 16, height = 11)
+
+
+
+## figure for online compliers
+
+ggplot() + 
+  geom_vline(xintercept = 0, linetype = "dashed", colour = "grey60") + 
+  
+  # online compliers
+  geom_segment(data = subset(fig_dat, data == "Online Compliers"),
+               aes(y = varno_r, yend = varno_r, 
+                   xend = ub, x = lb, colour = country), 
+               size = s, lineend = "round", alpha = 0.7) + 
+  geom_point(data = subset(fig_dat, data == "Online Compliers"), 
+             aes(y = varno_r, x = est, #shape = data, 
+                 fill = country), 
+             color = "white", size = s2) + 
+  
+  scale_y_continuous(
+    
+   breaks = c(1:18),
+   
+   labels = c(
+     "Treatment", "Exposure", "Treatment × Exposure", 
+     expression(bold("Model 3b: Congenial News (Behavioral)")), 
+     
+     "Treatment", "Exposure", "Treatment × Exposure", 
+     expression(bold("Model 3a: Congenial News (Self-Report)")), 
+     
+     "Treatment", "Exposure", "Treatment × Exposure", 
+     expression(bold("Model 2b: News News (Behavioral)")), 
+     
+     "Treatment", "Exposure", "Treatment × Exposure", 
+     expression(bold("Model 2a: News (Self-Report)")), 
+     
+     "Treatment", 
+     expression(bold("Model 1: Treatment"))
+     
+   )) + 
+  
+  scale_x_continuous(limits = c(-60,60))+ 
+  
+  scale_fill_manual(values = c("grey60", "goldenrod1")) + 
+  scale_colour_manual(values = c("grey60", "goldenrod1")) + 
+  scale_shape_manual(values = c(21, 8, 4)) + 
+  
+  theme_minimal() + 
+  facet_wrap(var ~ ., ncol = 5) +
+  theme(legend.position = 'bottom', legend.title = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.spacing = unit(1, "lines"), axis.title = element_blank(), 
+        axis.text.y = element_text(size = 7)
+        ) 
+  
+ggsave(paste0(figdir, "Figure 3 - Results_online.png"), 
+       device = "png", width = 16, height = 11)
+
+
+## figure for self-reported compliers
+
+ggplot() + 
+  geom_vline(xintercept = 0, linetype = "dashed", colour = "grey60") + 
+  
+  # online compliers
+  geom_segment(data = subset(fig_dat, data == "Self-Reported Compliers"),
+               aes(y = varno_r, yend = varno_r, 
+                   xend = ub, x = lb, colour = country), 
+               size = s, lineend = "round", alpha = 0.7) + 
+  geom_point(data = subset(fig_dat, data == "Self-Reported Compliers"), 
+             aes(y = varno_r, x = est, #shape = data, 
+                 fill = country), 
+             color = "white", size = s2) + 
+  
+  scale_y_continuous(
+    
+   breaks = c(1:18),
+   
+   labels = c(
+     "Treatment", "Exposure", "Treatment × Exposure", 
+     expression(bold("Model 3b: Congenial News (Behavioral)")), 
+     
+     "Treatment", "Exposure", "Treatment × Exposure", 
+     expression(bold("Model 3a: Congenial News (Self-Report)")), 
+     
+     "Treatment", "Exposure", "Treatment × Exposure", 
+     expression(bold("Model 2b: News News (Behavioral)")), 
+     
+     "Treatment", "Exposure", "Treatment × Exposure", 
+     expression(bold("Model 2a: News (Self-Report)")), 
+     
+     "Treatment", 
+     expression(bold("Model 1: Treatment"))
+     
+   )) + 
+  
+  scale_x_continuous(limits = c(-40,40))+ 
+  
+  scale_fill_manual(values = c("grey60", "goldenrod1")) + 
+  scale_colour_manual(values = c("grey60", "goldenrod1")) + 
+  scale_shape_manual(values = c(21, 8, 4)) + 
+  
+  theme_minimal() + 
+  facet_wrap(var ~ ., ncol = 5) +
+  theme(legend.position = 'bottom', legend.title = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.spacing = unit(1, "lines"), axis.title = element_blank(), 
+        axis.text.y = element_text(size = 7)
+        ) 
+  
+ggsave(paste0(figdir, "Figure 3 - Results_self-report.png"), 
        device = "png", width = 16, height = 11)
 ```
 
