@@ -468,6 +468,15 @@ pl$party_bin[pl$party_bin == "missing"] =
   sample(c("Pro", "Anti"), size = 1)
 ```
 
+Partisan identity strength
+```{r}
+# UNITED STATES
+us$party_strength <- abs(us$party - 4)
+
+# POLAND
+pl$party_strength <- abs(pl$suppgov1 - 5)
+```
+
 News exposure and congenial news exposure
 ```{r}
 # UNITED STATES
