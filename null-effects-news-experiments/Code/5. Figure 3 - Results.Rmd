@@ -9,7 +9,8 @@ source('helpers.R')
 vars = c("know_r", "know_fac_r", "ptc_r", "att_str_r", "att_imp_r",
          "ft_r", "under_r", "stupid_r", "malvol_r", "comp_r", "perpol_r", 
          "well_feel_r", "well_act_r", "news", "news_like", "news_self", 
-         "news_like_self", "wave", "condition", "person_id")
+         "news_like_self", "wave", "condition", "person_id",
+         "party_bin", "party_strength")
   
 df = read.csv(paste0(datadir, "us_survey_long.csv")) %>% 
   select(., vars) %>%
@@ -151,16 +152,17 @@ us_comp_web$time_nn[
 us_comp_web$time_nn[
   us_comp_web$date > us_comp_web$date_start] = "post" 
 
-us_comp_web = 
-  us_comp_web %>% 
-  aggregate(newscount ~ person_id + time_nn, FUN = sum, data = .) %>% 
-  mutate(time_nn = as.factor(time_nn)) %>% 
-  panel_data(., id = "person_id", wave = "time_nn") %>% 
-  widen_panel(., separator = "_") %>% 
+us_comp_web =
+  us_comp_web %>%
+  aggregate(newscount ~ person_id + time_nn, FUN = sum, data = .) %>%
+  mutate(time_nn = as.factor(time_nn)) %>%
+  panel_data(., id = "person_id", wave = "time_nn") %>%
+  widen_panel(., separator = "_") %>%
   mutate(diff = newscount_post - newscount_pre) %>%
-  mutate(diff = case_when(diff >= 0 ~ "Increase", diff < 0 ~ "Decrease")) %>% 
+  mutate(diff = case_when(diff >= 0 ~ "Increase", diff < 0 ~ "Decrease")) %>%
   filter(diff == "Decrease") %>%
   select(., "person_id")
+
 ```
 
 ```{r}
@@ -335,6 +337,67 @@ models$p_adjusted <- p.adjust(models$p, method = "fdr")
 
 write_xlsx(models, paste0(tabdir, "Figure 3 - Data.xlsx"))
 ```
+
+
+```{r}
+## Heterogenous effects by party id and party strength
+models_het = list()
+
+for (var in vars[1:13]){
+  
+  print(var)
+  for (cntry in c("Poland", "United States")){
+  
+    for (i in 1:3){
+      
+      dat = list(
+        dat1 = subset(df, country == cntry),
+        dat2 = subset(df, country == cntry & comp_self == 1),
+        dat3 = subset(df, country == cntry & comp_web == 1)
+      )[[i]]
+      
+      datname = c("All", "Self-Reported Compliers", "Online Compliers")[i]
+      
+    if (grepl("know|ptc|well", var) == T){
+        dat_new = subset(dat, wave == 2) 
+        dv = var; iv = ""
+      } else {
+        dat_new = dat %>%
+          panel_data(dat, id = "person_id", wave = wave) %>%
+          widen_panel(., separator = "_w") 
+        dv = paste0(var, "_w2");  iv = paste0(" +", var, "_w1")
+    }
+      
+    for (j in 1:2){
+    
+      eq = c(
+      paste0(dv, " ~ condition + party_bin + party_bin*condition", iv), 
+      paste0(dv, " ~ condition + party_strength + party_strength*condition", iv)
+      )[j] 
+      
+      modelname = c("Partisanship",
+                    "Partisan Identity Strength")[j]
+      
+      if ("condition_w1" %in% names(dat_new)){
+        dat_new = dat_new %>%
+          rename(condition = condition_w1)
+      }
+      
+      models_het[[length(models_het) + 1]] = lm(as.formula(eq), data = dat_new) %>%
+        model_to_table() %>%
+        mutate(model = paste0("Model ", j ,letters[i])) %>% 
+        mutate(modelname = modelname) %>% 
+        mutate(data = datname) %>% 
+        mutate(country = cntry) %>%
+        mutate(var = var)
+        
+      }}}
+}
+
+models_het = do.call(rbind, models_het)
+
+```
+
 
 ```{r}
 fig_dat = models[grepl("condition|news", models$coeff),] %>%
