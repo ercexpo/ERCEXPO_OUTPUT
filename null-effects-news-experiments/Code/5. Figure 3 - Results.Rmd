@@ -102,10 +102,13 @@ for (i in 1:nrow(us_comp_web)){
 visits_sum_us = do.call(rbind, visits_sum_us)
 visits_sum_us$date = as.character(visits_sum_us$date)
 
+us_trace_visits <- read.csv(paste0(datadir, "us_trace_visits_NEW.csv")) 
+us_trace_visits$created_local_date <- as.character(as.Date(us_trace_visits$created_local_date, format = "%Y-%m-%d"))
+
 visits_sum_us = visits_sum_us %>% 
   left_join(
     aggregate(id ~ person_id + created_local_date, 
-              data = read.csv(paste0(datadir, "us_trace_visits.csv")) %>%
+              data = us_trace_visits %>%
                 filter(person_id %in% us_ids_exp$person_id), 
               FUN = length) %>% 
     setNames(., c("person_id", "date", "newscount")), 
@@ -195,10 +198,13 @@ for (i in 1:nrow(pl_comp_web)){
 visits_sum_pl = do.call(rbind, visits_sum_pl)
 visits_sum_pl$date = as.character(visits_sum_pl$date)
 
+pl_trace_visits <- read.csv(paste0(datadir, "pl_trace_visits_NEW.csv")) 
+pl_trace_visits$created_local_date <- as.character(as.Date(pl_trace_visits$created_local_date, format = "%Y-%m-%d"))
+
 visits_sum_pl = visits_sum_pl %>% 
   left_join(
     aggregate(id ~ person_id + created_local_date, 
-              data = read.csv(paste0(datadir, "pl_trace_visits.csv")) %>%
+              data = pl_trace_visits %>%
                 filter(person_id %in% pl_ids_exp$person_id), 
               FUN = length) %>% 
     setNames(., c("person_id", "date", "newscount")), 
@@ -531,7 +537,7 @@ ggplot() +
      
    )) + 
   
-  scale_x_continuous(limits = c(-40,40))+ 
+  scale_x_continuous(limits = c(-20,20))+ 
   
   scale_fill_manual(values = c("grey60", "goldenrod1")) + 
   scale_colour_manual(values = c("grey60", "goldenrod1")) + 
