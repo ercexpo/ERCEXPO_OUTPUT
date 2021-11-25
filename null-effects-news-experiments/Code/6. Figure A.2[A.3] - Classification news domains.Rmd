@@ -14,20 +14,24 @@ visits_pl = read.csv(paste0(datadir, "pl_trace_visits.csv")) %>%
   subset(., person_id %in% pl_ids & wave == 2) %>%
   aggregate(id ~ score_domain, data = ., FUN = length) %>% 
   setNames(., c("domain", "count")) %>% 
-  left_join(., read.csv(paste0(datadir, "pl_trace_ideology.csv")), 
+  left_join(., read.csv(paste0(datadir, "pl_trace_ideology.csv")), # %>%
+              # 
+            # rbind(data.frame(domain = c("onet.pl", "tvn24.pl")
+            #   , 
             by = "domain") %>% 
   select(., c("domain", "count", "Ideology.point.estimate", 
               "Ideology.3.level")) %>%
   setNames(., c("domain", "count", "ideo", "ideo_cat")) %>% 
   mutate(ideo_cat = dplyr::recode(ideo_cat,
-    left = "Left", 
+    left = "Left",
     center = "Center",
     right = "Right",
     .default = "No Score"
-  ))  %>% 
+  ))  %>%
   mutate(hj = as.numeric(
-    case_when(ideo >= 0 ~ "1", ideo < 0 ~ "0", is.na(ideo) ~ "1"))) %>% 
-  mutate(domain = str_remove(str_split_fixed(domain, "\\.", 2)[,1], " "))
+    case_when(ideo >= 0 ~ "1", ideo < 0 ~ "0", is.na(ideo) ~ "1"))) %>%
+  arrange(ideo)
+  # mutate(domain = str_remove(str_split_fixed(domain, "\\.", 2)[,1], " ")) 
 
 visits_us = read.csv(paste0(datadir, "us_trace_visits.csv")) %>% 
   subset(., person_id %in% us_ids & wave == 3) %>%
