@@ -18,7 +18,7 @@ colnames(totals_us) = gsub("raw_visits", "visits_raw", names(totals_us))
 Import trace data and merge with ideology scores
 ```{r}
 visits_pl = 
-  read.csv(paste0(datadir, "pl_trace_visits.csv")) %>%
+  read.csv(paste0(datadir, "pl_trace_visits_NEW.csv")) %>%
   left_join(., 
             select(read.csv(paste0(datadir, "pl_trace_ideology.csv")),
             c("domain", "Ideology.point.estimate", "Ideology.3.level")) %>% 
@@ -26,10 +26,10 @@ visits_pl =
             by = c("score_domain" = "domain")) 
   
 visits_us = 
-  select(read.csv(paste0(datadir, "us_trace_visits.csv")), -c("political")) %>%
+  select(read.csv(paste0(datadir, "us_trace_visits_NEW.csv")), -c("political")) %>%
   left_join(., 
             select(read.csv(paste0(datadir, "us_trace_ideology.csv")),
-            c("domain", "ideology_cat.score", "ideology_cat.score.cat")) %>% 
+            c("domain", "wilson", "wilson_cat")) %>% 
             setNames(., c("domain", "ideology", "ideology_cat")),
             by = c("score_domain" = "domain"))
 ```
