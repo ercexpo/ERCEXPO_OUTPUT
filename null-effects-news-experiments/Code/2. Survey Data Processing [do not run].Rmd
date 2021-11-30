@@ -99,7 +99,13 @@ us = select(us, c(
   "domain_right_mean_w3_post", "news_self", "diet_lean_w2",
   
   # condition
-  "nonews_condition_post"
+  "nonews_condition_post",
+  
+  # attitude variables
+  "att_econ_1_w3", "att_econ_2_w3", "att_econ_3_w3", 
+  "att_climate_1_w3", "att_climate_2_w3", "att_climate_3_w3", 
+  "att_immigrant_1_w3", "att_immigrant_2_w3", "att_immigrant_3_w3", 
+  "att_gun_1_w3", "att_gun_2_w3", "att_gun_3_w3"
 ))
 ```
 
@@ -176,7 +182,13 @@ colnames(us) = c(
   "news_self", "news_like_self",
   
   # condition
-  "condition"
+  "condition",
+  
+  # attitudes
+  "att_econ_1_pre", "att_econ_2_pre", "att_econ_3_pre", 
+  "att_climate_1_pre", "att_climate_2_pre", "att_climate_3_pre", 
+  "att_immigrant_1_pre", "att_immigrant_2_pre", "att_immigrant_3_pre", 
+  "att_gun_1_pre", "att_gun_2_pre", "att_gun_3_pre"
 )
 ```
 
@@ -258,7 +270,13 @@ pl = select(pl, c(
   "domain_right_mean_w2_post", "news_self", "f1_pre", 
   
   # condition
-  "wave2kontrolna_pre", "wave2eksperymentalna_pre"
+  "wave2kontrolna_pre", "wave2eksperymentalna_pre",
+  
+  # attitudes
+  "v2q24_1_r1_pre", "v2q24_2_r1_pre", "v2q24_3_r1_pre", 
+  "v2q25_1_r1_pre", "v2q25_2_r1_pre", "v2q25_3_r1_pre", 
+  "v2q27_1_r1_pre", "v2q27_2_r1_pre", "v2q27_3_r1_pre", 
+  "v2q28_1_r1_pre", "v2q28_2_r1_pre", "v2q28_3_r1_pre"
 ))
 ```
 
@@ -345,7 +363,13 @@ colnames(pl) = c(
   "news_self", "news_like_self",
   
   # condition
-  "condition_control", "condition_experimental"
+  "condition_control", "condition_experimental",
+  
+  # attitudes
+    "att_econ_1_pre", "att_econ_2_pre", "att_econ_3_pre",
+  "att_women_1_pre", "att_women_2_pre", "att_women_3_pre",
+  "att_relig_1_pre", "att_relig_2_pre", "att_relig_3_pre",
+  "att_eu_1_pre", "att_eu_2_pre", "att_eu_3_pre"
 )
 ```
 
@@ -354,7 +378,7 @@ colnames(pl) = c(
 Sex
 ```{r}
 # POLAND
-pl$sex = recode(pl$sex, `1` = "Male", `2` = "Female")
+pl$sex = dplyr::recode(pl$sex, `1` = "Male", `2` = "Female")
 ```
 
 Age (categorical variable)
@@ -380,7 +404,7 @@ Educational attainment
 ```{r}
 # UNITED STATES
 us$edu = 
-  recode(us$edu,
+  dplyr::recode(us$edu,
     `Associate Degree` = "Education: Junior college", 
     `College Degree (such as B.A., B.S.)` = "Education: Bachelor", 
     `High school graduate` = "Education: High school", 
@@ -408,7 +432,7 @@ pl$edu = case_when(
 Experimental condition
 ```{r}
 # UNITED STATES
-us$condition = recode(us$condition, 
+us$condition = dplyr::recode(us$condition, 
                       `control` = "No News - Control",
                       `experiment` = "No News - Experiment")
 
@@ -420,6 +444,17 @@ pl$condition[!is.na(pl$condition_experimental)] = "More News - Experiment"
 
 Partisanship (used to identify political out-groups) 
 ```{r}
+
+# left-right attitude index
+us <- us %>%
+  mutate(
+    leftright_att = select(., c(
+      att_econ_1_pre, att_econ_2_pre, att_econ_3_pre, 
+      att_climate_1_pre,  att_climate_2_pre, att_climate_3_pre, 
+      att_immigrant_1_pre, att_immigrant_2_pre, att_immigrant_3_pre, 
+      att_gun_1_pre, att_gun_2_pre, att_gun_3_pre)) %>%
+      rowMeans(na.rm = TRUE))
+
 # UNITED STATES
 us$party_bin = case_when(
   us$party %in% 1:3 ~ "Democrat", 
@@ -427,19 +462,33 @@ us$party_bin = case_when(
   us$party %in% 5:7 ~ "Republican")
 
 # Impute using ideology
-us$party_bin[us$party_bin == "Independent" & us$ideo < 5] = "Democrat" 
-us$party_bin[us$party_bin == "Independent" & us$ideo > 5] = "Republican" 
+us$party_bin[(us$party_bin == "Independent" | is.na(us$party_bin)) & us$ideo < 5] = "Democrat" 
+us$party_bin[(us$party_bin == "Independent" | is.na(us$party_bin)) & us$ideo > 5] = "Republican" 
 
 # Impute using support for Trump
-us$party_bin[us$party_bin == "Independent" & us$approve_trump < 5] = "Democrat" 
-us$party_bin[us$party_bin == "Independent" & 
+us$party_bin[(us$party_bin == "Independent" | is.na(us$party_bin))& us$approve_trump < 5] = "Democrat" 
+us$party_bin[(us$party_bin == "Independent" | is.na(us$party_bin)) & 
              us$approve_trump > 5] = "Republican" 
 
-# Assign remaining randomly 
-us$party_bin[us$party_bin == "Independent"] = 
-  sample(c("Democrat", "Republican"), size = 1)
+# Assign remaining randomly - OLD
+# us$party_bin[us$party_bin == "Independent"] = 
+#   sample(c("Democrat", "Republican"), size = 1)
+
+# Impute using left-right attitude index
+us$party_bin[(us$party_bin == "Independent" | is.na(us$party_bin)) & us$leftright_att < 7] = "Democrat" 
+us$party_bin[(us$party_bin == "Independent" | is.na(us$party_bin)) & us$leftright_att > 7] = "Republican" 
 
 # POLAND
+
+pl <- pl %>%
+  mutate(
+    leftright_att = select(., c(
+      "att_econ_1_pre", "att_econ_2_pre", "att_econ_3_pre",
+  "att_women_1_pre", "att_women_2_pre", "att_women_3_pre",
+  "att_relig_1_pre", "att_relig_2_pre", "att_relig_3_pre",
+  "att_eu_1_pre", "att_eu_2_pre", "att_eu_3_pre")) %>%
+      rowMeans(na.rm = TRUE))
+
 pl$party_bin = "missing"
 
 # Opponents vs. proponents government
@@ -463,9 +512,12 @@ pl$party_bin[pl$party_bin == "missing" & pl$opp_party1 == 1] = "Anti"
 pl$party_bin[pl$party_bin == "missing" & pl$party2 == 1] = "Pro"
 pl$party_bin[pl$party_bin == "missing" & pl$opp_party2 == 1] = "Anti"
 
-# Randomly impute remaining 17 independents
-pl$party_bin[pl$party_bin == "missing"] = 
-  sample(c("Pro", "Anti"), size = 1)
+# Randomly impute remaining 17 independents - OLD
+# pl$party_bin[pl$party_bin == "missing"] = 
+#   sample(c("Pro", "Anti"), size = 1)
+
+pl$party_bin[pl$party_bin == "missing" & pl$leftright_att < 6] = "Anti"
+pl$party_bin[pl$party_bin == "missing" & pl$leftright_att > 6] = "Pro"
 ```
 
 Partisan identity strength
