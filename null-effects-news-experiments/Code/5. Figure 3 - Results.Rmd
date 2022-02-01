@@ -12,12 +12,12 @@ vars = c("know_r", "know_fac_r", "ptc_r", "att_str_r", "att_imp_r",
          "news_like_self", "wave", "condition", "person_id",
          "party_bin", "party_strength")
   
-df = read.csv(paste0(datadir, "us_survey_long.csv")) %>% 
+df = read.csv(paste0(datadir, "us_survey_long_NEW.csv")) %>% 
   select(., vars) %>%
   mutate(country = "United States") %>% 
   bind_rows(
-    list(., read.csv(paste0(datadir, "pl_survey_long.csv")) %>%
-            select(., vars) %>%
+    list(., read.csv(paste0(datadir, "pl_survey_long_NEW.csv")) %>%
+            select(., all_of(vars)) %>%
             mutate(country = "Poland"))) %>%
   filter(condition != "")
 ```
@@ -51,20 +51,20 @@ pl_ids_exp = data.frame(
                        condition == "More News - Experiment")$person_id)
 
 for (i in 1:6){
-  
+
   check = read_sav(paste0(datadir, "pl_survey_check", i, ".sav")) %>%
-    left_join(., read.csv(paste0(datadir, "person_ids.csv")), 
+    left_join(., read.csv(paste0(datadir, "person_ids.csv")),
               by = "respondent_id") %>%
-    subset(., person_id %in% pl_ids_exp$person_id) %>% 
+    subset(., person_id %in% pl_ids_exp$person_id) %>%
     setNames(., gsub(paste0("y1eksp", i), "comp", names(.))) %>%
-    data.frame() %>% 
-    as_tibble() %>% 
-    mutate(comp = car::recode(comp, "1 = 1; 2 = 0")) %>% 
+    data.frame() %>%
+    as_tibble() %>%
+    mutate(comp = car::recode(comp, "1 = 1; 2 = 0")) %>%
     select(., c("person_id", "comp")) %>%
-    setNames(c("person_id", paste0("comp_c", i))) 
-  
+    setNames(c("person_id", paste0("comp_c", i)))
+
   pl_ids_exp = left_join(pl_ids_exp, check, by = "person_id")
-  
+
 }
 
 pl_comp_self = pl_ids_exp %>%
@@ -344,6 +344,76 @@ models$p_adjusted <- p.adjust(models$p, method = "fdr")
 write_xlsx(models, paste0(tabdir, "Figure 3 - Data.xlsx"))
 ```
 
+```{r models-main} 
+
+models = list()
+
+for (var in vars[1:13]){
+  
+  print(var)
+  for (cntry in c("Poland", "United States")){
+    
+        dat = subset(df, country == cntry)
+      
+      datname = 
+      
+    if (grepl("know|ptc|well", var) == T){
+        dat_new = subset(dat, wave == 2) 
+        dv = var; iv = ""
+      } else {
+        dat_new = dat %>%
+          panel_data(dat, id = "person_id", wave = wave) %>%
+          widen_panel(., separator = "_w") 
+        dv = paste0(var, "_w2");  iv = paste0(" +", var, "_w1")
+    }
+      
+    for (j in 1:5){
+    
+      eq = c(
+      paste0(dv, " ~ condition", iv), 
+      paste0(dv, " ~ condition + news_self + news_self*condition", iv), 
+      paste0(dv, " ~ condition + news + news*condition", iv),
+      paste0(dv, " ~ condition + news_like_self + news_like_self*condition", iv),
+      paste0(dv, " ~ condition + news_like + news_like*condition", iv)
+      )[j] 
+      
+      modelname = c("Treatment Effects", 
+                    "Prior News Exposure (Self-Report)", 
+                    "Prior News Exposure (Behavioral)", 
+                    "Prior Like-Minded News Exposure (Self-Report)", 
+                    "Prior Like-Minded News Exposure (Behavioral)")[j]
+      
+      if ("condition_w1" %in% names(dat_new)){
+        dat_new = dat_new %>%
+          rename(condition = condition_w1)
+      }
+      
+      models[[length(models) + 1]] = lm(as.formula(eq), data = dat_new) %>%
+        model_to_table() %>%
+        mutate(model = paste0("Model ", j ,letters[i])) %>% 
+        mutate(modelname = modelname) %>% 
+        # mutate(data = datname) %>% 
+        mutate(country = cntry) %>%
+        mutate(var = var)
+        
+      }}
+}
+
+models = do.call(rbind, models)
+
+write_xlsx(models, paste0(tabdir, "Figure 3 - Data.xlsx"))
+
+fig_dat <- models %>%
+  filter(grepl("condition|:", .$coeff))
+
+##apply the fdr adjustment
+fig_dat$p_adjusted <- p.adjust(fig_dat$p, method = "fdr")
+fig_dat <- fig_dat %>%
+  mutate(sig = ifelse(p_adjusted < 0.05, TRUE, FALSE))
+
+test <- fig_dat %>% filter(sig == TRUE)
+
+```
 
 ```{r}
 ## Heterogenous effects by party id and party strength
@@ -496,11 +566,13 @@ ggplot() +
   geom_vline(xintercept = 0, linetype = "dashed", colour = "grey60") + 
   
   # Main analyses
-  geom_segment(data = subset(fig_dat, data == "All"),
+  geom_segment(data = fig_dat,
+    # data = subset(fig_dat, data == "All"),
                aes(y = varno_r, yend = varno_r, 
                    xend = ub, x = lb, colour = country), 
                size = s, lineend = "round", alpha = 0.7) + 
-  geom_point(data = subset(fig_dat, data == "All"), 
+  geom_point(data = fig_dat,
+    # data = subset(fig_dat, data == "All"), 
              aes(y = varno_r, x = est, #shape = data, 
                  fill = country), 
              color = "white", size = s2) + 

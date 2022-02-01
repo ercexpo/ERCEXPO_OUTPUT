@@ -1,5 +1,5 @@
 domain,wilson,wilson_cat
-yahoo.com/news,0.0848,Right
+yahoo.com/news,0.0848,Center
 finance.yahoo.com,0.1467,Right
 twistity.com,,
 wisedime.com,,
@@ -48,9 +48,9 @@ arcamax.com,-0.0805,Center
 nypost.com,0.1813,Right
 npr.org,-0.4161,Left
 latimes.com,-0.261,Left
-cnbc.com,0.0811,Right
+cnbc.com,0.0811,Center
 lehighvalleylive.com,0.1343,Right
-topix.com,0.0841,Right
+topix.com,0.0841,Center
 mountaineagle.com,,
 theatlantic.com,-0.4148,Left
 bloomberg.com,-0.0792,Center
@@ -275,7 +275,7 @@ democratandchronicle.com,0.0169,Center
 c-span.org,-0.1794,Center
 elpais.com,-0.3631,Left
 news.com.au,0.0545,Center
-kare11.com,0.0885,Right
+kare11.com,0.0885,Center
 ktiv.com,0.6579,Right
 blueridgenow.com,0.4687,Right
 kdrv.com,0.1539,Right
@@ -285,7 +285,7 @@ theepochtimes.com,0.0084,Center
 abc7.com,0.0957,Right
 centralmaine.com,-0.2782,Left
 ketv.com,0.463,Right
-fayobserver.com,0.0832,Right
+fayobserver.com,0.0832,Center
 mailtribune.com,-0.131,Center
 wthr.com,0.3002,Right
 mic.com,-0.595,Left
@@ -354,7 +354,7 @@ commercialappeal.com,-0.0222,Center
 phys.org,-0.2064,Left
 cleveland.com,-0.047,Center
 delawareonline.com,-0.0891,Center
-app.com,0.0875,Right
+app.com,0.0875,Center
 nhk.or.jp,,
 wesh.com,0.2539,Right
 thestreet.com,0.1554,Right
@@ -411,7 +411,7 @@ lawfareblog.com,-0.6433,Left
 helenair.com,-0.193,Center
 wjbf.com,,
 pressherald.com,-0.4097,Left
-wavy.com,0.0848,Right
+wavy.com,0.0848,Center
 wtsp.com,0.2656,Right
 newsbusters.org,0.8702,Right
 talkingpointsmemo.com,-0.6732,Left
@@ -422,7 +422,7 @@ abc3340.com,0.2458,Right
 rtve.es,-0.1846,Center
 wfaa.com,0.2697,Right
 walb.com,0.3391,Right
-mycentraljersey.com,0.0879,Right
+mycentraljersey.com,0.0879,Center
 king5.com,-0.0595,Center
 lohud.com,-0.1004,Center
 independent.ie,-0.1355,Center
@@ -632,7 +632,7 @@ thetelegraph.com,,
 chronicleonline.com,,
 katc.com,0.4374,Right
 krqe.com,0.0332,Center
-wivb.com,0.0877,Right
+wivb.com,0.0877,Center
 ctpost.com,-0.0683,Center
 jconline.com,0.091,Right
 smokymountainnews.com,,
@@ -866,7 +866,7 @@ telegram.com,-0.0927,Center
 poughkeepsiejournal.com,-0.0314,Center
 pjstar.com,0.045,Center
 lasvegassun.com,0.0727,Center
-sunherald.com,0.0819,Right
+sunherald.com,0.0819,Center
 cantonrep.com,0.3176,Right
 armytimes.com,0.4144,Right
 muskogeephoenix.com,0.5249,Right
@@ -1077,7 +1077,7 @@ mintpressnews.com,-0.1743,Center
 newindianexpress.com,-0.0819,Center
 azcapitoltimes.com,-0.0592,Center
 times-news.com,-0.02,Center
-pottsmerc.com,0.0824,Right
+pottsmerc.com,0.0824,Center
 kitsapsun.com,0.1944,Right
 cumberlink.com,0.2777,Right
 newsadvance.com,0.3471,Right
@@ -1101,7 +1101,7 @@ times-gazette.com,,
 thecourierexpress.com,,
 davisclipper.com,,
 cheddar.com,-0.1446,Center
-krem.com,0.081,Right
+krem.com,0.081,Center
 kttc.com,,
 pressandjournal.co.uk,,
 week.com,,
@@ -1146,7 +1146,7 @@ tucsonweekly.com,-0.268,Left
 sevendaysvt.com,-0.2013,Left
 concordmonitor.com,-0.1948,Center
 deccanchronicle.com,-0.072,Center
-recordnet.com,0.0859,Right
+recordnet.com,0.0859,Center
 heraldonline.com,0.0988,Right
 consortiumnews.com,0.1885,Right
 journaltimes.com,0.1937,Right
@@ -1168,7 +1168,7 @@ gosanangelo.com,,
 vvdailypress.com,,
 leavenworthtimes.com,,
 kten.com,,
-ktvz.com,0.0835,Right
+ktvz.com,0.0835,Center
 ktxs.com,,
 newsy.com,0.0144,Center
 wnyt.com,0.0305,Center
@@ -1726,7 +1726,7 @@ burlingtoncountytimes.com,0.045,Center
 stardem.com,0.0735,Center
 delawarestatenews.net,0.0786,Center
 thedaonline.com,0.0786,Center
-timesherald.com,0.0859,Right
+timesherald.com,0.0859,Center
 heraldstandard.com,0.1172,Right
 themonitor.com,0.1228,Right
 thereporteronline.com,0.1298,Right
@@ -2082,7 +2082,7 @@ portlandtribune.com,-0.1865,Center
 starlocalmedia.com,,
 dailytrib.com,,
 laprensasa.com,,
-parkrecord.com,0.0802,Right
+parkrecord.com,0.0802,Center
 torringtontelegram.com,,
 nytco.com,-0.7784,Left
 alexcityoutlook.com,,
@@ -3863,7 +3863,7 @@ kchispanicnews.com,,
 ingrams.com,,
 kccall.com,,
 northeastnews.net,,
-pitch.com,0.0807,Right
+pitch.com,0.0807,Center
 kearneycourier.com,,
 dddnews.com,,
 kirksvilledailyexpress.com,,

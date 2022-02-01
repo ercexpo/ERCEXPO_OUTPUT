@@ -3,7 +3,7 @@ title: "1. Browsing Data Processing [do not run]"
 ---
 
 Import trace data containing the totals, incl. number of active days
-```{r}
+```{r data-totals}
 knitr::opts_chunk$set(message = FALSE, warning = FALSE)
 
 # source file 
@@ -13,10 +13,14 @@ source('helpers.R')
 totals_pl = read_xlsx(paste0(datadir, "pl_trace_totals.xlsx"))
 totals_us =read.csv(paste0(datadir, "us_trace_totals.csv"))
 colnames(totals_us) = gsub("raw_visits", "visits_raw", names(totals_us))
+
+person_survey_timestamp <- read.csv(paste0(datadir, "person_survey_timestamp.csv")) %>%
+  mutate(across(c(w2, w3, w2_month_before, w3_month_before), 
+                ~ as.POSIXct(., format = "%Y-%m-%d %H:%M:%S")))
 ```
 
 Import trace data and merge with ideology scores
-```{r}
+```{r data-visits}
 visits_pl = 
   read.csv(paste0(datadir, "pl_trace_visits_NEW.csv")) %>%
   left_join(., 
@@ -37,7 +41,7 @@ visits_us =
 
 Function to aggregate visit level data as mean visited (political) news sites
 per day, or as a percentage of total browsing. 
-```{r}
+```{r DELETE, eval = F}
 process_trace_data = function(
   ids = NULL, 
   totals = NULL, 
@@ -147,8 +151,8 @@ if (calculate_perc == T){
 
 ```
 
-```{r}
-pl = process_trace_data(ids = pl_ids,
+```{r DELETE, eval = F}
+pl02 = process_trace_data(ids = pl_ids,
                         totals = totals_pl, 
                         visits = visits_pl, 
                         waves = c(1,2), 
@@ -156,7 +160,7 @@ pl = process_trace_data(ids = pl_ids,
                         calculate_perc = F, 
                         n_active_days = 1)
 
-us = process_trace_data(ids = us_ids,
+us02 = process_trace_data(ids = us_ids,
                         totals = totals_us, 
                         visits = visits_us, 
                         waves = c(1,2,3), 
@@ -168,33 +172,130 @@ write.csv(pl, paste0(datadir, "pl_trace_aggregates.csv"), row.names = F)
 write.csv(us, paste0(datadir, "us_trace_aggregates.csv"), row.names = F)
 ```
 
+```{r summarize-traces-pl}
+
+# [This replaces the two previous chunks, implementing the correct logic for prior news expo and congenial news expo]
+
+# Get visits during month before pre-survey (W2)
+
+visits_pl_month_before <- visits_pl %>% 
+  mutate(created_local_date = as.POSIXct(
+    created_local_date, format = "%Y-%m-%d %H:%M:%S")) %>%
+  left_join(., person_survey_timestamp) %>%
+  select(-c(w3, w3_month_before)) %>%
+  filter(created_local_date > w2_month_before & 
+           created_local_date < w2)
+
+# Prior news exposure:
+## PAP: "we calculate respondents' prior level of news consumption by calculating the average number of times a day respondents accessed unique URLs from news domains the month before completing the pre survey"
+
+visits_pl_news_sum <- visits_pl_month_before %>%
+  # filter out non-news visits
+  filter(score_domain != "") %>%
+  # count news visits per person
+  group_by(person_id) %>%
+	summarise(news_visits_count = n()) %>%
+  # get active days in month before 
+  left_join(., read.csv(paste0(datadir, "person_more_no_news_month.csv")) %>%
+              filter(timespan == "month_before_w2")) %>%
+  # calculate final measure
+  mutate(news = news_visits_count / active_days) %>%
+  select(-c(timespan, country))
+
+# Prior congenial news exposure
+## PAP: "The visited news URLs will be first duplicated at the day level, the domain-level ideology scores will be attached to all the visits/URLs to/from that domain, and then we will use the resulting scores to calculate the final individual-level average. In our ideological scale the domains have higher values as they are more conservative."
+
+visits_pl_news_sum_02 <- visits_pl_month_before %>% 
+  # filter out non-news visits
+  filter(score_domain != "") %>%
+  # compute mean ideology per person
+  group_by(person_id) %>%
+	summarise(news_ideo = mean(ideology, na.rm = T)) %>%
+  ungroup() %>%
+  mutate(news_ideo = scale(news_ideo))
+
+# Join both 
+
+pl_trace_aggregates <- visits_pl_news_sum %>%
+  left_join(., visits_pl_news_sum_02) %>%
+  select(person_id, news, news_ideo)
+
+```
+
+
+```{r summarize-traces-us}
+
+# Get visits during month before pre-survey (W2)
+
+visits_us_month_before <- visits_us %>% 
+  mutate(created_local_date = as.POSIXct(
+    created_local_date, format = "%Y-%m-%d %H:%M:%S")) %>%
+  left_join(., person_survey_timestamp) %>%
+  select(-c(w2, w2_month_before)) %>%
+  filter(created_local_date > w3_month_before & 
+           created_local_date < w3)
+
+# Prior news exposure:
+## PAP: "we calculate respondents' prior level of news consumption by calculating the average number of times a day respondents accessed unique URLs from news domains the month before completing the pre survey"
+
+visits_us_news_sum <- visits_us_month_before %>%
+  # count news visits per person
+  group_by(person_id) %>%
+	summarise(news_visits_count = n()) %>%
+  # get active days in month before 
+  left_join(., read.csv(paste0(datadir, "person_more_no_news_month.csv")) %>%
+              filter(timespan == "month_before_w3")) %>%
+  # calculate final measure
+  mutate(news = news_visits_count / active_days) %>%
+  select(-c(timespan, country))
+
+# Prior congenial news exposure
+## PAP: "The visited news URLs will be first duplicated at the day level, the domain-level ideology scores will be attached to all the visits/URLs to/from that domain, and then we will use the resulting scores to calculate the final individual-level average. In our ideological scale the domains have higher values as they are more conservative."
+
+visits_us_news_sum_02 <- visits_us_month_before %>% 
+  # compute mean ideology per person
+  group_by(person_id) %>%
+	summarise(news_ideo = mean(ideology, na.rm = T)) %>%
+  ungroup() %>%
+  mutate(news_ideo = scale(news_ideo))
+
+# Join both 
+
+us_trace_aggregates <- visits_us_news_sum %>%
+  left_join(., visits_us_news_sum_02) %>%
+  select(person_id, news, news_ideo)
+
+```
+
 Merge with post-survey data 
 ```{r}
 source('helpers.R')
 pl = left_join(
   left_join(haven::read_sav(paste0(datadir, "pl_survey_post.sav")),
             read.csv(paste0(datadir, "person_ids.csv")), by = "respondent_id"),
-  read.csv(paste0(datadir, "pl_trace_aggregates.csv")), by = "person_id")
+  pl_trace_aggregates, by = "person_id")
 
-us = read.csv(paste0(datadir, "us_survey_raw.csv"))[3:807,] %>%
-  mutate(email11 = gsub("\\$", "", email11)) %>% 
-  mutate(RecipientEmail = gsub("\\$", "", RecipientEmail)) %>% 
-  mutate(RecipientEmail = 
-           ifelse(RecipientEmail == "", email11, RecipientEmail)) %>%
-  left_join(., select(read.csv(paste0(datadir, "us_survey_ids.csv")), 
-                      c("email", "ResponseId_W3")), 
-            by = c("RecipientEmail" = "email"), all.x = T) %>% 
-  subset(., !is.na(ResponseId_W3)) %>% 
+test <- read.csv("/Users/bernhardclemm/Dropbox/Mac/Documents/Academia/EXPO/repositories/ERCEXPO_OUTPUT/null-effects-news-experiments/US_postsurvey_raw.csv")
+
+us = read.csv(paste0(datadir, "US_postsurvey_raw.csv")) %>%
+  # mutate(email11 = gsub("\\$", "", email11)) %>% 
+  # mutate(RecipientEmail = gsub("\\$", "", RecipientEmail)) %>% 
+  # mutate(RecipientEmail = 
+  #          ifelse(RecipientEmail == "", email11, RecipientEmail)) %>%
+  # left_join(., select(read.csv(paste0(datadir, "us_survey_ids.csv")), 
+  #                     c("email", "ResponseId_W3")), 
+  #           by = "person_id", all.x = T) %>% 
+  # subset(., !is.na(ResponseId_W3)) %>% 
   left_join(., select(read.csv(paste0(datadir, "us_survey_all.csv")), 
                       c("person_id", "ResponseId_w3")), 
-            by = c("ResponseId_W3" = "ResponseId_w3")) %>% 
-  select(., -c(
-    catchvar(., c("email", "lastname", "firstname", "ipaddress",
-                   "responseid", "location"))
-  )) %>% 
-  left_join(.,read.csv(paste0(datadir, "us_trace_aggregates.csv")), 
+            by = "person_id") %>% 
+  # select(., -c(
+  #   catchvar(., c("email", "lastname", "firstname", "ipaddress",
+  #                  "responseid", "location"))
+  # )) %>% 
+  left_join(., us_trace_aggregates, 
             by = "person_id")
 
-write.csv(pl, paste0(datadir, "pl_survey_post.csv"))
-write.csv(us, paste0(datadir, "us_survey_post.csv"))
+write.csv(pl, paste0(datadir, "pl_survey_post_NEW.csv"))
+write.csv(us, paste0(datadir, "us_survey_post_NEW.csv"))
 ```

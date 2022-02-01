@@ -9,16 +9,16 @@ knitr::opts_chunk$set(message = FALSE, warning = FALSE)
 
 source('helpers.R')
 
-pl = read_rename_csv(paste0("pl_survey_post.csv"), "_post") %>%
+pl = read_rename_csv(paste0("pl_survey_post_NEW.csv"), "_post") %>%
   left_join(., read_rename_sav("pl_survey_w1.sav", "_w1"), 
             by = c("respondent_id_post" = "respondent_id_w1")) %>%
   left_join(., read_rename_sav("pl_survey_pre.sav", "_pre"), 
             by = c("respondent_id_post" = "respondent_id_pre")) %>%
   setNames(., tolower(names(.))) %>% 
   mutate(news_self = rowMeans(
-    select(., paste0("q8_h2_r", 1:9, "_w1")), na.rm = T))
+    select(., paste0("q8_h2_r", 1:9, "_w1")), na.rm = T)) # BC: ACCORDING TO PAP, THIS SHOULD TAKE INTO ACCOUNT W2
 
-us = read_rename_csv(paste0("us_survey_post.csv"), "_post") %>%
+us = read_rename_csv(paste0("us_survey_post_NEW.csv"), "_post") %>%
   left_join(., read_rename_csv("us_survey_all.csv", ""), 
             by = c("person_id_post" = "person_id")) %>%
   setNames(., tolower(names(.))) %>% 
@@ -92,11 +92,13 @@ us = select(us, c(
   paste0("well_feelings_", 1:6, "_post"),
   
   # exposure variables
-  "visits_raw_w3_post", "visits_u_w3_post", "day_range_w3_post", 
-  "active_days_w3_post", "count_domains_w3_post", 
-  "domain_center_w3_post", "domain_left_w3_post", "domain_right_w3_post", 
-  "domain_center_mean_w3_post", "domain_left_mean_w3_post",
-  "domain_right_mean_w3_post", "news_self", "diet_lean_w2",
+  # "visits_raw_w3_post", "visits_u_w3_post", "day_range_w3_post", 
+  # "active_days_w3_post", "count_domains_w3_post", 
+  # "domain_center_w3_post", "domain_left_w3_post", "domain_right_w3_post", 
+  # "domain_center_mean_w3_post", "domain_left_mean_w3_post",
+  # "domain_right_mean_w3_post", 
+  "news_self", "diet_lean_w2",
+  "news_post", "news_ideo_post",
   
   # condition
   "nonews_condition_post",
@@ -176,10 +178,11 @@ colnames(us) = c(
   paste0("well_feel_", 1:6, "_post"),
   
   # exposure variables
-  "visits_raw", "visits_u", "day_range", "active_days", "count_domains", 
-  "domain_center", "domain_left", "domain_right", 
-  "domain_center_mean", "domain_left_mean", "domain_right_mean",  
-  "news_self", "news_like_self",
+  # "visits_raw", "visits_u", "day_range", "active_days", "count_domains", 
+  # "domain_center", "domain_left", "domain_right", 
+  # "domain_center_mean", "domain_left_mean", "domain_right_mean",  
+  "news_self", "news_ideo_self",
+  "news", "news_ideo",
   
   # condition
   "condition",
@@ -263,11 +266,13 @@ pl = select(pl, c(
   paste0("exp4_r", 1:6, "_post"),
   
   # exposure variables
-  "visits_raw_w2_post", "visits_u_w2_post", "day_range_w2_post", 
-  "active_days_w2_post", "count_domains_w2_post", 
-  "domain_center_w2_post", "domain_left_w2_post", "domain_right_w2_post", 
-  "domain_center_mean_w2_post", "domain_left_mean_w2_post",
-  "domain_right_mean_w2_post", "news_self", "f1_pre", 
+  # "visits_raw_w2_post", "visits_u_w2_post", "day_range_w2_post", 
+  # "active_days_w2_post", "count_domains_w2_post", 
+  # "domain_center_w2_post", "domain_left_w2_post", "domain_right_w2_post", 
+  # "domain_center_mean_w2_post", "domain_left_mean_w2_post",
+  # "domain_right_mean_w2_post", 
+  "news_self", "f1_pre",
+  "news_post", "news_ideo_post",
   
   # condition
   "wave2kontrolna_pre", "wave2eksperymentalna_pre",
@@ -357,10 +362,11 @@ colnames(pl) = c(
   paste0("well_feel_", 1:6, "_post"),
   
   # exposure variables
-  "visits_raw", "visits_u", "day_range", "active_days", "count_domains", 
-  "domain_center", "domain_left", "domain_right", 
-  "domain_center_mean", "domain_left_mean", "domain_right_mean",  
+  # "visits_raw", "visits_u", "day_range", "active_days", "count_domains", 
+  # "domain_center", "domain_left", "domain_right", 
+  # "domain_center_mean", "domain_left_mean", "domain_right_mean",  
   "news_self", "news_like_self",
+  "news", "news_ideo",
   
   # condition
   "condition_control", "condition_experimental",
@@ -531,19 +537,42 @@ pl$party_strength <- abs(pl$suppgov1 - 5)
 
 News exposure and congenial news exposure
 ```{r}
-# UNITED STATES
-us$news = us$count_domains / us$active_days
-us$news_like = us$domain_left / us$active_days
-us$news_like[which(us$party_bin == "Democrat")] = 
-  us$domain_left[which(us$party_bin == "Democrat")] / 
-  us$active_days[which(us$party_bin == "Democrat")]
 
-# POLAND
-pl$news = pl$count_domains / pl$active_days
-pl$news_like = pl$domain_left / pl$active_days
-pl$news_like[which(pl$party_bin == "Pro")] = 
-  pl$domain_left[which(pl$party_bin == "Pro")] / 
-  pl$active_days[which(pl$party_bin == "Pro")]
+# this is wrong and not needed
+# UNITED STATES
+# us$news = us$count_domains / us$active_days
+# us$news_like = us$domain_left / us$active_days
+# us$news_like[which(us$party_bin == "Democrat")] = 
+#   us$domain_left[which(us$party_bin == "Democrat")] / 
+#   us$active_days[which(us$party_bin == "Democrat")]
+# 
+# # POLAND
+# pl$news = pl$count_domains / pl$active_days
+# pl$news_like = pl$domain_left / pl$active_days
+# pl$news_like[which(pl$party_bin == "Pro")] = 
+#   pl$domain_left[which(pl$party_bin == "Pro")] / 
+#   pl$active_days[which(pl$party_bin == "Pro")]
+
+# flip news ideology for Democrats
+us <- us %>%
+  mutate(news_like = ifelse(
+    party_bin == "Democrat", news_ideo*(-1), news_ideo))
+
+# also for self-reported exposure
+us <- us %>%
+  mutate(news_like_self = ifelse(
+    party_bin == "Democrat", news_ideo_self*(-1), news_ideo_self))
+
+# flip news ideology for those with anti-government position
+pl <- pl %>%
+  mutate(news_like = ifelse(
+    party_bin == "Anti", news_ideo*(-1), news_ideo))
+
+# also for self-reported exposure
+pl <- pl %>%
+  mutate(news_like_self_r = ifelse(
+    party_bin == "Anti", news_like_self*(-1), news_like_self))
+
 ```
 
 
@@ -573,7 +602,7 @@ for (i in c(2,4,5)){us[,paste0("know_", i, "_post")] =
 # correct incorrect dummy for knowledge questions
 for (i in 1:4){
   us[,paste0("know_fac_",i, "_post")] = 
-    recode(us[,paste0("know_fac_",i, "_post")], 
+    dplyr::recode(us[,paste0("know_fac_",i, "_post")], 
            `1` = 1, `2` = 0, `3` = 0, `4` = 0, .default = 0)
 }
 
@@ -584,7 +613,7 @@ us$know_fac_post = rowSums(select(us,paste0("know_fac_", c(1:4), "_post")),
 
 # POLAND 
 
-# invert negatively coded items
+# invert negatively coded items 
 for (i in c(2,4,5)){ pl[,paste0("know_", i, "_post")] = 
   invert(pl[,paste0("know_", i, "_post")])}
 
@@ -656,7 +685,7 @@ us$att_str_post = rowMeans(select(us, paste0("att_str_", us_issues, "_post")))
 
 # POLAND
 pl$att_str_pre = rowMeans(
-  select(pl, paste0("att_str_", 1:4, "_pre")), na.rm = T)
+  select(pl, paste0("att_str_", 1:4, "_pre")), na.rm = T) # BC: this should be 5 issues according to PAP
 pl$att_str_post = rowMeans(
   select(pl, paste0("att_str_", 1:4, "_post")),  na.rm = T)
 ```
@@ -1048,24 +1077,30 @@ for (var in dvs){
   us_long[,paste0(var, "_r")] = rescale_100(us_long[,var])
 }
 
-# Exposure variables natural logarithm rescaled to 0 and 100
-for (var in c("news", "news_like")){
-  pl_long[, paste0(var, "_r")] = pl_long[,var] + 1
-  pl_long[, paste0(var, "_r")] = log(pl_long[, paste0(var, "_r")])
-  pl_long[, paste0(var, "_r")] = rescale_100(pl_long[, paste0(var, "_r")])
-  
-  us_long[, paste0(var, "_r")] = us_long[,var] + 1
-  us_long[, paste0(var, "_r")] = log(us_long[, paste0(var, "_r")])
-  us_long[, paste0(var, "_r")] = rescale_100(us_long[, paste0(var, "_r")])
-}
+# Prior news expo natural logarithm 
+pl_long <- pl_long %>%
+  mutate(news_log = log(news + 1))
+
+us_long <- us_long %>%
+  mutate(news_log = log(news + 1))
+
+# for (var in c("news", "news_like")){
+#   pl_long[, paste0(var, "_r")] = pl_long[,var] + 1
+#   pl_long[, paste0(var, "_r")] = log(pl_long[, paste0(var, "_r")])
+#   pl_long[, paste0(var, "_r")] = rescale_100(pl_long[, paste0(var, "_r")])
+# 
+#   us_long[, paste0(var, "_r")] = us_long[,var] + 1
+#   us_long[, paste0(var, "_r")] = log(us_long[, paste0(var, "_r")])
+#   us_long[, paste0(var, "_r")] = rescale_100(us_long[, paste0(var, "_r")])
+# }
 ```
 
 ## Store data
 
 Save data
 ```{r}
-write.csv(pl, paste0(datadir, "pl_survey_wide.csv"))
-write.csv(us, paste0(datadir, "us_survey_wide.csv"))
-write.csv(pl_long, paste0(datadir, "pl_survey_long.csv"))
-write.csv(us_long, paste0(datadir, "us_survey_long.csv"))
+write.csv(pl, paste0(datadir, "pl_survey_wide_NEW.csv"))
+write.csv(us, paste0(datadir, "us_survey_wide_NEW.csv"))
+write.csv(pl_long, paste0(datadir, "pl_survey_long_NEW.csv"))
+write.csv(us_long, paste0(datadir, "us_survey_long_NEW.csv"))
 ```
