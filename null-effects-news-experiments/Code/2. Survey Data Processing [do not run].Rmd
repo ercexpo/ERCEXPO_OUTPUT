@@ -600,6 +600,7 @@ for (i in c(2,4,5)){us[,paste0("know_", i, "_post")] =
   invert(us[,paste0("know_", i, "_post")])}
 
 # correct incorrect dummy for knowledge questions
+## BC: NOT SURE THIS WORKS - TWO QUESTIONS WERE OPEN-ENDED!
 for (i in 1:4){
   us[,paste0("know_fac_",i, "_post")] = 
     dplyr::recode(us[,paste0("know_fac_",i, "_post")], 
